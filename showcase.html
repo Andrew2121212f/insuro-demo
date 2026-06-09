@@ -3,248 +3,322 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>insuro — product showcase</title>
+<title>insuro — product & UI system</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   :root{
-    --bg:#070709; --blue:#5076ff; --blue2:#6a87ff;
-    --ink:#dbe6ff; --mut:rgba(219,230,255,.55); --mut2:rgba(219,230,255,.32);
-    --line:rgba(137,174,255,.10); --line2:rgba(137,174,255,.18);
-    --glass:rgba(137,174,255,.04);
+    --bg:#070709; --blue:#5076ff; --blue2:#6a87ff; --blueglow:#5b86ff;
+    --ink:#dbe6ff; --mut:rgba(219,230,255,.55); --mut2:rgba(219,230,255,.3);
+    --line:rgba(137,174,255,.10); --line2:rgba(137,174,255,.2);
+    --glass:rgba(137,174,255,.035);
+    --green:#5fe39b; --amber:#ffb15c;
   }
   html,body{background:var(--bg);color:#fff;font-family:"Host Grotesk",sans-serif;-webkit-font-smoothing:antialiased}
-  body{padding:96px 56px 120px;min-height:100vh}
+  body{padding:96px 56px 130px}
   a{color:inherit;text-decoration:none}
-  ::-webkit-scrollbar{width:9px;height:9px}
-  ::-webkit-scrollbar-thumb{background:rgba(137,174,255,.14);border-radius:9px}
+  ::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:rgba(137,174,255,.14);border-radius:9px}
 
-  .wrap{max-width:1320px;margin:0 auto}
-  /* header */
-  .head{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:64px}
-  .eyebrow{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:rgba(137,174,255,.5)}
-  .head h1{font-size:64px;font-weight:400;line-height:1.04;margin-top:18px;letter-spacing:-1px}
-  .head .sub{font-size:18px;color:var(--mut);margin-top:18px;max-width:560px;line-height:1.5}
-  .topnav{position:fixed;top:34px;left:56px;right:56px;display:flex;align-items:center;justify-content:space-between;z-index:50;font-size:16px}
+  .topnav{position:fixed;top:30px;left:56px;right:56px;display:flex;align-items:center;justify-content:space-between;z-index:50;font-size:16px}
   .topnav .home{color:var(--mut);transition:color .2s}.topnav .home:hover{color:#fff}
-  .topnav .brand{color:#fff;letter-spacing:.3px}
+  .wrap{max-width:1340px;margin:0 auto}
+  .head{text-align:center;margin-bottom:58px}
+  .eyebrow{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:rgba(137,174,255,.5)}
+  .head h1{font-size:62px;font-weight:400;line-height:1.04;margin-top:16px;letter-spacing:-1px}
+  .head .sub{font-size:18px;color:var(--mut);margin:18px auto 0;max-width:560px;line-height:1.5}
 
-  /* grid */
+  .sechead{display:flex;align-items:baseline;gap:14px;margin:54px 4px 18px}
+  .sechead .n{font-size:12px;letter-spacing:2px;color:var(--mut2)}
+  .sechead h2{font-size:22px;font-weight:500;letter-spacing:-.2px}
+  .sechead .d{font-size:14px;color:var(--mut);margin-left:auto}
+
   .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;grid-auto-rows:300px}
-  .tile{position:relative;border:1px solid var(--line);background:var(--glass);border-radius:32px;overflow:hidden;
+  .tile{position:relative;border:1px solid var(--line);background:var(--glass);border-radius:30px;overflow:hidden;
     backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-    transition:border-color .3s ease,transform .3s cubic-bezier(.2,1,.3,1);will-change:transform}
+    transition:border-color .3s,transform .35s cubic-bezier(.2,1,.3,1)}
   .tile:hover{border-color:var(--line2);transform:translateY(-4px)}
-  .tile .lbl{position:absolute;top:26px;left:28px;z-index:5;font-size:13px;letter-spacing:1.6px;text-transform:uppercase;color:var(--mut2)}
+  .tile .lbl{position:absolute;top:24px;left:26px;z-index:6;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--mut2)}
   .span2{grid-column:span 2}.row2{grid-row:span 2}
-  .pad{position:absolute;inset:0;padding:62px 30px 30px;display:flex;flex-direction:column}
+  .pad{position:absolute;inset:0;padding:58px 28px 28px;display:flex;flex-direction:column}
 
-  /* shared atoms */
-  .pill{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 13px;border-radius:100px;font-size:12.5px;
+  /* glow / inner-shadow surface (как баннер) */
+  .glow{background:radial-gradient(120% 165% at 50% 50%,#0a1236 0%,#13235c 36%,#3a5cff 74%,#86a8ff 90%,#e2edff 100%);
+    box-shadow:inset 0 0 46px 2px rgba(130,165,255,.5), inset 0 0 20px rgba(255,255,255,.26);border:0}
+  .glow .lbl{color:rgba(255,255,255,.6)}
+  .glowBottom{background:radial-gradient(90% 150% at 50% 138%,#7ea2ff 0%,#3f61ff 20%,#1a2a6e 48%,#0b1438 78%),#0b1438}
+
+  .pill{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 12px;border-radius:100px;font-size:12.5px;
     color:var(--ink);background:rgba(137,174,255,.07);border:1px solid var(--line)}
-  .mesh{position:relative;overflow:hidden;background:#4d70ff}
-  .mesh::before{content:"";position:absolute;inset:0;z-index:0;
-    background:radial-gradient(65% 65% at 22% 24%,#9bbcff 0,transparent 60%),
-      radial-gradient(60% 60% at 84% 28%,#3a63ff 0,transparent 60%),
-      radial-gradient(78% 78% at 52% 94%,#b8d0ff 0,transparent 62%),#4d70ff;
+  .mesh{background:#4d70ff;position:relative;overflow:hidden}
+  .mesh::before{content:"";position:absolute;inset:0;
+    background:radial-gradient(65% 65% at 22% 24%,#9bbcff 0,transparent 60%),radial-gradient(60% 60% at 84% 28%,#3a63ff 0,transparent 60%),radial-gradient(78% 78% at 52% 94%,#b8d0ff 0,transparent 62%),#4d70ff;
     background-size:230% 230%;animation:mesh 5s ease-in-out infinite}
   @keyframes mesh{0%{background-position:0 0}50%{background-position:100% 100%}100%{background-position:0 0}}
   .mesh>*{position:relative;z-index:1}
-  .arrow{flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:1px solid rgba(80,118,255,.28);
-    display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:22px}
-  .btn{height:46px;padding:0 22px;border-radius:13px;display:inline-flex;align-items:center;gap:8px;justify-content:center;
-    font-size:15px;font-weight:500;color:#fff;background:linear-gradient(120deg,var(--blue2),#3a5bff);cursor:pointer}
-  .btnw{height:46px;padding:0 22px;border-radius:13px;display:inline-flex;align-items:center;gap:8px;justify-content:center;
-    font-size:15px;font-weight:500;color:#2247ff;background:#fff;cursor:pointer}
+  .arrow{flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:1px solid rgba(80,118,255,.28);display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:21px}
+  .btnw{height:46px;padding:0 22px;border-radius:100px;display:inline-flex;align-items:center;font-size:15px;color:#2545ff;background:#fff;cursor:pointer}
 
-  /* ---- 1. ACCOUNT (tall, 2 rows) ---- */
-  .acc .who{display:flex;align-items:center;gap:14px}
-  .acc .ava{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#6a87ff,#3a5bff);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
-  .acc .who .nm{font-size:18px}.acc .who .em{font-size:13px;color:var(--mut2)}
-  .acc .policy{margin-top:auto;border:1px solid var(--line);border-radius:22px;padding:22px;background:rgba(8,11,20,.5)}
+  /* ===== HERO STAT (big, inner-glow) ===== */
+  .stat .pad{justify-content:flex-end}
+  .stat .big{font-size:64px;line-height:.95;letter-spacing:-2px}
+  .stat .sub{font-size:15px;color:rgba(255,255,255,.7);margin-top:10px}
+  .stat .tag{position:absolute;top:54px;left:28px;font-size:13px;color:rgba(255,255,255,.7)}
+
+  /* ===== LINE CHART ===== */
+  .chartcard .top{display:flex;align-items:flex-start;justify-content:space-between}
+  .chartcard .top .v{font-size:40px;line-height:1;letter-spacing:-1px}
+  .chartcard .top .v .d{font-size:15px;color:var(--green);margin-left:8px}
+  .chartcard .top .sel{font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:100px;padding:7px 13px}
+  .chartcard svg{position:absolute;left:0;right:0;bottom:0;width:100%;height:62%}
+  .chartcard .cap{position:absolute;left:28px;bottom:24px;font-size:13px;color:var(--mut)}
+
+  /* ===== METRIC TILES (ring / bar / sparkline) ===== */
+  .metric .pad{justify-content:space-between}
+  .metric .h{font-size:15px;color:#fff}
+  .metric .num{font-size:42px;line-height:1;letter-spacing:-1px;margin-top:auto}
+  .metric .unit{font-size:14px;color:var(--mut);margin-left:6px}
+  .metric .sm{font-size:12.5px;color:var(--mut);margin-top:8px}
+  .ring{position:absolute;top:46px;right:24px;width:84px;height:84px}
+  .ring .t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:19px}
+  .bar{height:8px;border-radius:8px;background:rgba(137,174,255,.12);overflow:hidden;margin-top:14px}
+  .bar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#3a5bff,#86a8ff)}
+  .seg{display:flex;gap:4px;margin-top:14px}
+  .seg span{flex:1;height:7px;border-radius:4px;background:rgba(137,174,255,.12)}
+  .seg span.on{background:linear-gradient(90deg,#3a5bff,#7ea2ff)}
+
+  /* ===== ACCOUNT ===== */
+  .acc .who{display:flex;align-items:center;gap:13px}
+  .acc .ava{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6a87ff,#3a5bff);display:flex;align-items:center;justify-content:center;font-size:17px}
+  .acc .who .nm{font-size:17px}.acc .who .em{font-size:12.5px;color:var(--mut2)}
+  .acc .policy{margin-top:auto;border:1px solid var(--line);border-radius:20px;padding:20px;background:rgba(8,11,20,.5)}
   .acc .policy .top{display:flex;align-items:center;justify-content:space-between}
-  .acc .badge{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#7CFFB0;background:rgba(60,255,140,.08);border:1px solid rgba(60,255,140,.2);padding:5px 10px;border-radius:100px}
-  .acc .car{font-size:24px;margin-top:14px}
-  .acc .plate{display:inline-flex;margin-top:10px;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:8px;padding:5px 11px;font-size:15px;color:var(--ink)}
-  .acc .meta{display:flex;justify-content:space-between;margin-top:18px;font-size:13px;color:var(--mut)}
-  .acc .meta b{display:block;color:#fff;font-size:16px;font-weight:500;margin-top:3px}
-  .acc .links{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+  .acc .badge{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--green);background:rgba(95,227,155,.08);border:1px solid rgba(95,227,155,.22);padding:5px 10px;border-radius:100px}
+  .acc .car{font-size:22px;margin-top:13px}
+  .acc .plate{display:inline-flex;margin-top:9px;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:8px;padding:5px 11px;font-size:14px;color:var(--ink)}
+  .acc .meta{display:flex;justify-content:space-between;margin-top:16px;font-size:12.5px;color:var(--mut)}
+  .acc .meta b{display:block;color:#fff;font-size:15px;font-weight:500;margin-top:3px}
 
-  /* ---- 2. LIVE PRICE ---- */
-  .lp .q{font-size:21px;margin-top:2px}
-  .lp .opts{display:flex;gap:8px;margin-top:16px}
-  .lp .opt{flex:1;border:1px solid var(--line);border-radius:14px;padding:12px 10px;font-size:13px;color:var(--mut);text-align:center}
-  .lp .opt.on{border-color:rgba(80,118,255,.55);background:rgba(80,118,255,.1);color:#fff}
-  .lp .bar{margin-top:auto}
-  .lp .rng{position:relative;height:6px;border-radius:6px;background:rgba(137,174,255,.12);margin:10px 0 8px}
-  .lp .rng i{position:absolute;top:0;bottom:0;left:22%;right:30%;border-radius:6px;background:linear-gradient(90deg,#3a5bff,#6a87ff)}
-  .lp .rng b{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.4)}
-  .lp .ends{display:flex;justify-content:space-between;font-size:13px;color:var(--mut)}
-  .lp .now{display:flex;align-items:baseline;gap:10px;margin-top:6px}
-  .lp .now .n{font-size:34px}.lp .now .d{font-size:13px;color:#7CFFB0}
-
-  /* ---- 3. PRICE BREAKDOWN ---- */
-  .pb .row{display:flex;align-items:center;gap:12px;margin-top:14px}
-  .pb .row .k{width:96px;flex:0 0 auto;font-size:13.5px;color:var(--ink)}
-  .pb .row .t{flex:1;height:8px;border-radius:8px;background:rgba(137,174,255,.1);overflow:hidden}
-  .pb .row .t i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#3a5bff,#6a87ff)}
-  .pb .row .v{width:54px;text-align:right;font-size:13.5px;color:#fff}
-  .pb .total{display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:18px;border-top:1px solid var(--line)}
-  .pb .total .n{font-size:30px}.pb .total span{font-size:13px;color:var(--mut)}
-
-  /* ---- 4. CLAIMS ---- */
-  .cl .drop{border:1.5px dashed var(--line2);border-radius:18px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--mut);font-size:14px;margin-top:6px}
-  .cl .ai{margin-top:14px;border:1px solid rgba(80,118,255,.25);background:rgba(80,118,255,.06);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px}
-  .cl .ai .dot{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
-  .cl .ai .est{font-size:14px;color:var(--mut)}.cl .ai .est b{display:block;color:#fff;font-size:18px;font-weight:500;margin-top:2px}
-
-  /* ---- 5. CHECKOUT ---- */
-  .co .line{display:flex;justify-content:space-between;font-size:14px;color:var(--mut);margin-top:11px}
+  /* CLAIMS / CHECKOUT / COMPARE / LANG / TRUST */
+  .cl .drop{border:1.5px dashed var(--line2);border-radius:18px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--mut);font-size:14px;margin-top:4px}
+  .cl .ai{margin-top:12px;border:1px solid rgba(80,118,255,.25);background:rgba(80,118,255,.06);border-radius:16px;padding:13px 15px;display:flex;align-items:center;gap:12px}
+  .cl .ai .dot{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .cl .ai .est{font-size:13px;color:var(--mut)}.cl .ai .est b{display:block;color:#fff;font-size:17px;font-weight:500;margin-top:2px}
+  .co .line{display:flex;justify-content:space-between;font-size:14px;color:var(--mut);margin-top:10px}
   .co .line b{color:#fff;font-weight:400}
-  .co .grand{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
-  .co .grand .n{font-size:30px;color:#fff}
-  .co .hold{display:flex;align-items:center;gap:9px;margin-top:14px;font-size:13px;color:var(--mut)}
-  .co .lock{display:flex;align-items:center;gap:8px;margin-top:auto;font-size:12.5px;color:var(--mut2)}
-
-  /* ---- 6. COMPARE ---- */
-  .cmp table{width:100%;border-collapse:collapse;margin-top:8px}
-  .cmp td{padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--mut)}
-  .cmp td.v{text-align:right;color:#fff}
-  .cmp td.v.best{color:#7CFFB0}
+  .co .grand{display:flex;justify-content:space-between;align-items:baseline;margin-top:13px;padding-top:13px;border-top:1px solid var(--line)}
+  .co .grand .n{font-size:30px}
+  .co .lock{display:flex;align-items:center;gap:8px;margin-top:auto;font-size:12px;color:var(--mut2)}
+  .cmp table{width:100%;border-collapse:collapse;margin-top:6px}
+  .cmp td{padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--mut)}
+  .cmp td.v{text-align:right;color:#fff}.cmp td.v.best{color:var(--green)}
   .cmp tr:last-child td{border-bottom:0}
-
-  /* ---- 7. LANGUAGES ---- */
-  .lng .list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
-  .lng .it{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:14px;padding:13px 16px;font-size:15px;color:var(--mut)}
+  .lng .it{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:13px;padding:12px 15px;font-size:15px;color:var(--mut);margin-top:8px}
   .lng .it.on{border-color:rgba(80,118,255,.5);background:rgba(80,118,255,.08);color:#fff}
   .lng .it .tick{color:var(--blue)}
+  .tr .item{display:flex;gap:12px;align-items:flex-start;margin-top:15px}
+  .tr .item .ic{width:34px;height:34px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--blue)}
+  .tr .item .tx{font-size:13.5px;color:#fff}.tr .item .tx span{display:block;color:var(--mut2);font-size:12px;margin-top:3px}
 
-  /* ---- 8. TRUST ---- */
-  .tr .item{display:flex;gap:13px;align-items:flex-start;margin-top:16px}
-  .tr .item .ic{width:34px;height:34px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--blue)}
-  .tr .item .tx{font-size:14px;color:#fff}.tr .item .tx span{display:block;color:var(--mut2);font-size:12.5px;margin-top:3px}
-
-  /* ---- big CTA tile ---- */
-  .cta{background:radial-gradient(130% 170% at 12% 8%,#7c97ff,#4f72ff 52%,#274bff);border:0}
+  /* CTA */
+  .cta{border:0;background:radial-gradient(90% 150% at 50% 140%,#7ea2ff 0%,#3f61ff 20%,#1a2a6e 48%,#0b1438 78%),#0b1438;
+    box-shadow:inset 0 0 60px 6px rgba(120,160,255,.3)}
   .cta .pad{justify-content:center}
-  .cta h3{font-size:30px;line-height:1.1;color:#fff;max-width:80%}
-  .cta p{font-size:15px;color:rgba(255,255,255,.78);margin-top:12px;max-width:78%;line-height:1.45}
-  .cta .btnw{margin-top:22px;align-self:flex-start}
+  .cta h3{font-size:30px;line-height:1.08;max-width:78%}
+  .cta p{font-size:15px;color:rgba(255,255,255,.78);margin-top:10px;max-width:74%;line-height:1.45}
+  .cta .btnw{margin-top:20px;align-self:flex-start}
 
-  .foot{display:flex;align-items:center;justify-content:space-between;margin-top:50px;font-size:14px;color:var(--mut2)}
-  .foot a{color:var(--mut)}.foot a:hover{color:#fff}
-  .foot .fl{display:flex;gap:26px}
+  .foot{display:flex;align-items:center;justify-content:space-between;margin-top:52px;font-size:14px;color:var(--mut2)}
+  .foot .fl{display:flex;gap:24px}.foot a{color:var(--mut)}.foot a:hover{color:#fff}
 
-  @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}.span2{grid-column:span 2}}
-  @media(max-width:680px){body{padding:80px 20px}.grid{grid-template-columns:1fr;grid-auto-rows:280px}.span2,.row2{grid-column:auto;grid-row:auto}.head h1{font-size:42px}}
+  @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:680px){body{padding:80px 18px}.grid{grid-template-columns:1fr}.span2{grid-column:auto}.row2{grid-row:auto}.head h1{font-size:40px}}
 </style>
 </head>
 <body>
-  <div class="topnav">
-    <a class="brand">insuro</a>
-    <a class="home" href="hero.html">← back to hero</a>
-  </div>
+  <div class="topnav"><a class="brand">insuro</a><a class="home" href="hero.html">← back to hero</a></div>
 
   <div class="wrap">
     <div class="head">
-      <div class="eyebrow">insuro · product</div>
+      <div class="eyebrow">insuro · product & ui system</div>
       <h1>the complete picture</h1>
-      <div class="sub">the screens, flows and details that turn a plate lookup into a finished insurance product — quote, buy, claim, manage.</div>
+      <div class="sub">screens, data and details that turn a plate lookup into a finished insurance product.</div>
     </div>
 
+    <!-- ===== AT A GLANCE ===== -->
+    <div class="sechead"><span class="n">01</span><h2>at a glance</h2><span class="d">the numbers that matter, beautifully</span></div>
+    <div class="grid" style="grid-auto-rows:240px">
+
+      <!-- big stat glow -->
+      <div class="tile stat glow">
+        <div class="tag">your best rate</div>
+        <div class="pad">
+          <div class="big">€1,120</div>
+          <div class="sub">/ year · full kasko · 9 insurers compared</div>
+        </div>
+      </div>
+
+      <!-- savings line chart -->
+      <div class="tile chartcard span2">
+        <div class="lbl">savings vs market</div>
+        <div class="pad" style="display:block">
+          <div class="top">
+            <div class="v">−€520<span class="d">↘ cheaper</span></div>
+            <div class="sel">this quote ⌄</div>
+          </div>
+        </div>
+        <svg viewBox="0 0 600 200" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#5b86ff" stop-opacity=".34"/><stop offset="1" stop-color="#5b86ff" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="gl" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <path d="M0,150 C90,150 130,120 200,118 C270,116 300,60 360,58 C430,56 470,96 600,72 L600,200 L0,200 Z" fill="url(#lg)"/>
+          <path d="M0,150 C90,150 130,120 200,118 C270,116 300,60 360,58 C430,56 470,96 600,72" fill="none" stroke="#9bb6ff" stroke-width="3" filter="url(#gl)"/>
+          <circle cx="360" cy="58" r="6.5" fill="#fff" filter="url(#gl)"/>
+        </svg>
+        <div class="cap">tracked across all 9 insurers, updated live</div>
+      </div>
+
+      <!-- coverage score ring -->
+      <div class="tile metric">
+        <div class="lbl">coverage score</div>
+        <svg class="ring" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(137,174,255,.14)" stroke-width="8"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#5b86ff" stroke-width="8" stroke-linecap="round"
+            stroke-dasharray="264" stroke-dashoffset="29" transform="rotate(-90 50 50)"/>
+        </svg>
+        <div class="t" style="position:absolute;top:62px;right:42px;font-size:19px">92</div>
+        <div class="pad">
+          <div class="h">coverage score</div>
+          <div class="num">92<span class="unit">/ 100</span></div>
+          <div class="sm">full kasko · glass · theft · roadside</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== LIVE QUOTE ===== -->
+    <div class="sechead"><span class="n">02</span><h2>the living quote</h2><span class="d">price as a companion, not a black box</span></div>
     <div class="grid">
 
-      <!-- 1 · ACCOUNT (tall) -->
+      <!-- live price narrowing (span2) -->
+      <div class="tile span2" style="background:var(--glass)">
+        <div class="lbl">live price</div>
+        <div class="pad">
+          <div style="font-size:21px">how much cover do you need?</div>
+          <div style="display:flex;gap:8px;margin-top:16px">
+            <div class="pill" style="height:40px;border-radius:14px;flex:1;justify-content:center">liability</div>
+            <div class="pill" style="height:40px;border-radius:14px;flex:1;justify-content:center">+ theft & fire</div>
+            <div class="pill" style="height:40px;border-radius:14px;flex:1.4;justify-content:center;border-color:rgba(80,118,255,.55);background:rgba(80,118,255,.1);color:#fff">full kasko · recommended</div>
+          </div>
+          <div style="margin-top:auto">
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--mut)"><span>your price so far</span><span>2 answers to exact</span></div>
+            <div style="position:relative;height:6px;border-radius:6px;background:rgba(137,174,255,.12);margin:10px 0 8px">
+              <i style="position:absolute;top:0;bottom:0;left:22%;right:30%;border-radius:6px;background:linear-gradient(90deg,#3a5bff,#6a87ff)"></i>
+              <b style="position:absolute;top:50%;left:22%;width:14px;height:14px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.4)"></b>
+              <b style="position:absolute;top:50%;left:70%;width:14px;height:14px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.4)"></b>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:10px"><span style="font-size:34px">€980 – €1,180</span><span style="font-size:13px;color:var(--green)">narrowing ↓</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- price breakdown -->
+      <div class="tile">
+        <div class="lbl">what shapes your price</div>
+        <div class="pad">
+          <div style="font-size:15px;color:var(--mut)">every euro, explained</div>
+          <div style="margin-top:auto">
+            <div style="display:flex;align-items:center;gap:12px;margin-top:12px"><span style="width:78px;font-size:13px">577 hp</span><span class="bar" style="flex:1;margin:0"><i style="width:82%"></i></span><span style="width:46px;text-align:right;font-size:13px">€420</span></div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:12px"><span style="width:78px;font-size:13px">car value</span><span class="bar" style="flex:1;margin:0"><i style="width:62%"></i></span><span style="width:46px;text-align:right;font-size:13px">€330</span></div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:12px"><span style="width:78px;font-size:13px">driver</span><span class="bar" style="flex:1;margin:0"><i style="width:38%"></i></span><span style="width:46px;text-align:right;font-size:13px">€210</span></div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:12px"><span style="width:78px;font-size:13px">region</span><span class="bar" style="flex:1;margin:0"><i style="width:24%"></i></span><span style="width:46px;text-align:right;font-size:13px">€160</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- risk class meter -->
+      <div class="tile metric">
+        <div class="lbl">risk class</div>
+        <div class="pad">
+          <div class="h">risk class</div>
+          <div class="num" style="margin-top:auto">A<span class="unit">low risk</span></div>
+          <div class="seg"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+          <div class="sm">5 years no claims · garage-kept</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== MANAGE ===== -->
+    <div class="sechead"><span class="n">03</span><h2>own & manage</h2><span class="d">the policy lives in one place</span></div>
+    <div class="grid">
+
+      <!-- account -->
       <div class="tile acc row2">
         <div class="lbl">account</div>
         <div class="pad">
-          <div class="who">
-            <div class="ava">A</div>
-            <div><div class="nm">Andreas K.</div><div class="em">andreas@mail.cy</div></div>
-          </div>
+          <div class="who"><div class="ava">A</div><div><div class="nm">Andreas K.</div><div class="em">andreas@mail.cy</div></div></div>
           <div class="policy">
-            <div class="top"><span style="font-size:13px;color:var(--mut2)">active policy</span><span class="badge">active</span></div>
+            <div class="top"><span style="font-size:12.5px;color:var(--mut2)">active policy</span><span class="badge">active</span></div>
             <div class="car">Mercedes-AMG GT</div>
             <div class="plate"><span style="color:var(--blue)">★</span> ABC 123 · CY</div>
-            <div class="meta">
-              <div>cover<b>full kasko</b></div>
-              <div>renews<b>14 may 2027</b></div>
-              <div>premium<b>€1,120</b></div>
-            </div>
+            <div class="meta"><div>cover<b>full kasko</b></div><div>renews<b>14 may 2027</b></div><div>premium<b>€1,120</b></div></div>
           </div>
-          <div class="links">
-            <span class="pill">documents</span>
-            <span class="pill">report no-claims</span>
-            <span class="pill">renew early</span>
-          </div>
+          <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><span class="pill">documents</span><span class="pill">report no-claims</span><span class="pill">renew early</span></div>
         </div>
       </div>
 
-      <!-- 2 · LIVE PRICE (span 2) -->
-      <div class="tile lp span2">
-        <div class="lbl">live price</div>
+      <!-- renewal countdown ring -->
+      <div class="tile metric">
+        <div class="lbl">renewal</div>
+        <svg class="ring" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(137,174,255,.14)" stroke-width="8"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#6a87ff" stroke-width="8" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="80" transform="rotate(-90 50 50)"/>
+        </svg>
         <div class="pad">
-          <div class="q">how much cover do you need?</div>
-          <div class="opts">
-            <div class="opt">liability</div>
-            <div class="opt">+ theft &amp; fire</div>
-            <div class="opt on">full kasko · recommended</div>
-          </div>
-          <div class="bar">
-            <div class="ends"><span>your price so far</span><span>2 answers to exact</span></div>
-            <div class="rng"><i></i><b style="left:22%"></b><b style="left:70%"></b></div>
-            <div class="now"><span class="n">€980 – €1,180</span><span class="d">narrowing ↓</span></div>
-          </div>
+          <div class="h">renewal</div>
+          <div class="num" style="margin-top:auto">312<span class="unit">days</span></div>
+          <div class="sm">we'll hold your no-claims discount</div>
         </div>
       </div>
 
-      <!-- 3 · PRICE BREAKDOWN -->
-      <div class="tile pb">
-        <div class="lbl">what shapes your price</div>
-        <div class="pad">
-          <div style="font-size:16px;color:var(--mut);margin-bottom:2px">every euro, explained</div>
-          <div class="row"><span class="k">577 hp</span><span class="t"><i style="width:82%"></i></span><span class="v">€420</span></div>
-          <div class="row"><span class="k">car value</span><span class="t"><i style="width:64%"></i></span><span class="v">€330</span></div>
-          <div class="row"><span class="k">driver</span><span class="t"><i style="width:38%"></i></span><span class="v">€210</span></div>
-          <div class="row"><span class="k">region</span><span class="t"><i style="width:24%"></i></span><span class="v">€160</span></div>
-          <div class="total"><span style="font-size:13px;color:var(--mut)">total / year</span><span class="n">€1,120</span></div>
-        </div>
-      </div>
-
-      <!-- 4 · CLAIMS -->
+      <!-- claims -->
       <div class="tile cl">
         <div class="lbl">claims</div>
         <div class="pad">
-          <div style="font-size:16px;margin-bottom:4px">file a claim in minutes</div>
-          <div class="drop"><div style="font-size:26px">＋</div><div>add photos of the damage</div></div>
-          <div class="ai">
-            <div class="dot mesh">✦</div>
-            <div class="est">ai damage estimate<b>€2,400 · paid in 3 days</b></div>
-          </div>
+          <div style="font-size:15px;margin-bottom:4px">file a claim in minutes</div>
+          <div class="drop"><div style="font-size:24px">＋</div><div>add photos of the damage</div></div>
+          <div class="ai"><div class="dot mesh">✦</div><div class="est">ai damage estimate<b>€2,400 · paid in 3 days</b></div></div>
         </div>
       </div>
 
-      <!-- 5 · CHECKOUT -->
+      <!-- checkout -->
       <div class="tile co">
         <div class="lbl">checkout</div>
         <div class="pad">
-          <div style="font-size:16px">Gan Direct · full kasko</div>
+          <div style="font-size:15px">Gan Direct · full kasko</div>
           <div class="line"><span>annual premium</span><b>€1,120</b></div>
-          <div class="line"><span>no-claims discount</span><b>−€180</b></div>
+          <div class="line"><span>no-claims −20%</span><b>−€180</b></div>
           <div class="line"><span>garage parking</span><b>−€40</b></div>
-          <div class="grand"><span style="font-size:13px;color:var(--mut)">you pay</span><span class="n">€900<span style="font-size:14px;color:var(--mut)"> /yr</span></span></div>
-          <div class="hold"><span class="arrow" style="width:26px;height:26px;font-size:13px;border-color:rgba(80,118,255,.4)">⏱</span> price held for 7 days</div>
-          <div class="lock">🔒 encrypted · used only to price your policy</div>
+          <div class="grand"><span style="font-size:12.5px;color:var(--mut)">you pay</span><span class="n">€900<span style="font-size:14px;color:var(--mut)"> /yr</span></span></div>
+          <div class="lock">🔒 encrypted · price held 7 days</div>
         </div>
       </div>
 
-      <!-- 6 · COMPARE -->
+    </div>
+
+    <!-- ===== DECIDE & TRUST ===== -->
+    <div class="sechead"><span class="n">04</span><h2>decide with confidence</h2><span class="d">comparison by meaning, trust in the flow</span></div>
+    <div class="grid">
+
       <div class="tile cmp">
         <div class="lbl">compare by meaning</div>
         <div class="pad">
-          <div style="font-size:16px;margin-bottom:2px">Gan Direct <span style="color:var(--mut2);font-size:13px">vs Trust</span></div>
+          <div style="font-size:15px;margin-bottom:2px">Gan Direct <span style="color:var(--mut2);font-size:13px">vs Trust</span></div>
           <table>
             <tr><td>payout speed</td><td class="v best">3 days</td></tr>
             <tr><td>glass cover</td><td class="v best">included</td></tr>
@@ -255,35 +329,31 @@
         </div>
       </div>
 
-      <!-- 7 · LANGUAGES -->
       <div class="tile lng">
         <div class="lbl">language layer</div>
         <div class="pad">
-          <div style="font-size:16px;margin-bottom:4px">built for cyprus</div>
-          <div class="list">
-            <div class="it on">English <span class="tick">✓</span></div>
-            <div class="it">Ελληνικά</div>
-            <div class="it">Русский</div>
-            <div class="it">Українська</div>
-          </div>
+          <div style="font-size:15px;margin-bottom:2px">built for cyprus</div>
+          <div class="it on">English <span class="tick">✓</span></div>
+          <div class="it">Ελληνικά</div>
+          <div class="it">Русский</div>
+          <div class="it">Українська</div>
         </div>
       </div>
 
-      <!-- 8 · TRUST -->
       <div class="tile tr">
         <div class="lbl">trust in the flow</div>
         <div class="pad">
-          <div class="item"><div class="ic">🔒</div><div class="tx">bank-grade encryption<span>data used only to price your policy</span></div></div>
+          <div class="item"><div class="ic">🔒</div><div class="tx">bank-grade encryption<span>used only to price your policy</span></div></div>
           <div class="item"><div class="ic">⚡</div><div class="tx">payouts in days, not weeks<span>no office visit required</span></div></div>
           <div class="item"><div class="ic">★</div><div class="tx">4.9 · 12,000 drivers<span>licensed, regulated in cyprus</span></div></div>
         </div>
       </div>
 
-      <!-- CTA (span 2) -->
-      <div class="tile cta span2">
+      <!-- CTA -->
+      <div class="tile cta">
         <div class="pad">
           <h3>a plate is all it takes.</h3>
-          <p>quote in 60 seconds, buy online, claim from your phone — the whole policy lives in one place.</p>
+          <p>quote in 60 seconds, buy online, claim from your phone.</p>
           <a class="btnw" href="hero.html">try the hero flow →</a>
         </div>
       </div>
@@ -291,7 +361,7 @@
     </div>
 
     <div class="foot">
-      <span>insuro · product showcase</span>
+      <span>insuro · product & ui system</span>
       <div class="fl"><a href="hero.html">hero</a><a>flows</a><a>system</a></div>
       <span>© 2026 · cyprus</span>
     </div>
