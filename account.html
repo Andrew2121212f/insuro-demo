@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>insuro — personal cabinet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#070709; --blue:#5076ff; --blue2:#6a87ff; --blueglow:#5b86ff;
+    --ink:#dbe6ff; --mut:rgba(219,230,255,.55); --mut2:rgba(219,230,255,.3);
+    --line:rgba(137,174,255,.10); --line2:rgba(137,174,255,.2);
+    --glass:rgba(137,174,255,.035);
+    --green:#5fe39b; --amber:#ffb15c;
+  }
+  html,body{background:var(--bg);color:#fff;font-family:"Host Grotesk",sans-serif;-webkit-font-smoothing:antialiased}
+  body{padding:104px 56px 120px}
+  a{color:inherit;text-decoration:none}
+  ::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:rgba(137,174,255,.14);border-radius:9px}
+
+  /* ===== TOP NAV (fixed) ===== */
+  .topnav{position:fixed;top:30px;left:56px;right:56px;display:flex;align-items:center;justify-content:space-between;z-index:50;font-size:16px}
+  .topnav .brand{font-size:20px;letter-spacing:-.3px}
+  .topnav .home{color:var(--mut);transition:color .2s}.topnav .home:hover{color:#fff}
+
+  .wrap{max-width:1200px;margin:0 auto}
+
+  /* ===== ACCOUNT TOP BAR ===== */
+  .acctbar{display:flex;align-items:center;justify-content:space-between;gap:20px;
+    border:1px solid var(--line);background:var(--glass);border-radius:26px;padding:20px 26px;
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+  .acctbar .who{display:flex;align-items:center;gap:16px}
+  .acctbar .ava{width:54px;height:54px;border-radius:50%;flex:0 0 auto;
+    background:linear-gradient(135deg,#6a87ff,#3a5bff);display:flex;align-items:center;justify-content:center;
+    font-size:22px;box-shadow:0 8px 22px -8px rgba(58,91,255,.7)}
+  .acctbar .nm{font-size:19px;line-height:1.15}
+  .acctbar .em{font-size:13px;color:var(--mut2);margin-top:3px}
+  .acctbar .eyebrow{font-size:11px;letter-spacing:2.6px;text-transform:uppercase;color:rgba(137,174,255,.5);margin-bottom:9px}
+  .langtog{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:100px;padding:5px 6px;background:rgba(137,174,255,.05)}
+  .langtog span{display:inline-flex;align-items:center;justify-content:center;height:30px;min-width:38px;padding:0 12px;border-radius:100px;font-size:13.5px;color:var(--mut);cursor:pointer;transition:color .2s,background .2s}
+  .langtog span.on{background:rgba(80,118,255,.16);color:#fff}
+  .langtog span:hover:not(.on){color:#fff}
+
+  /* ===== SECTION HEAD ===== */
+  .sechead{display:flex;align-items:baseline;gap:14px;margin:50px 4px 18px}
+  .sechead .n{font-size:12px;letter-spacing:2px;color:var(--mut2)}
+  .sechead h2{font-size:22px;font-weight:500;letter-spacing:-.2px}
+  .sechead .d{font-size:14px;color:var(--mut);margin-left:auto}
+
+  /* ===== CARD BASE ===== */
+  .card{position:relative;border:1px solid var(--line);background:var(--glass);border-radius:28px;
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    transition:border-color .3s,transform .35s cubic-bezier(.2,1,.3,1)}
+  .card:hover{border-color:var(--line2);transform:translateY(-4px)}
+  .lbl{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--mut2)}
+
+  .pill{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 14px;border-radius:100px;font-size:13px;
+    color:var(--ink);background:rgba(137,174,255,.07);border:1px solid var(--line);cursor:pointer;
+    transition:border-color .2s,background .2s,color .2s}
+  .pill:hover{border-color:var(--line2);background:rgba(137,174,255,.12);color:#fff}
+  .pill .i{font-size:14px;line-height:1;color:var(--blue2)}
+
+  @keyframes breathe{0%,100%{filter:brightness(1)}50%{filter:brightness(1.07)}}
+
+  /* ===== HERO ROW LAYOUT ===== */
+  .herorow{display:grid;grid-template-columns:1.55fr 1fr;gap:18px;align-items:stretch}
+
+  /* ===== ACTIVE POLICY HERO (inner-glow key card) ===== */
+  .hero{position:relative;border-radius:30px;overflow:hidden;border:0;padding:32px 36px 30px;
+    background:radial-gradient(120% 165% at 50% 50%,#0a1236 0%,#13235c 36%,#3a5cff 74%,#86a8ff 90%,#e2edff 100%);
+    box-shadow:inset 0 0 46px 2px rgba(130,165,255,.5), inset 0 0 20px rgba(255,255,255,.26);
+    animation:breathe 6.5s ease-in-out infinite;
+    transition:transform .35s cubic-bezier(.2,1,.3,1)}
+  .hero:hover{transform:translateY(-4px)}
+  .hero .lbl{color:rgba(255,255,255,.62)}
+  .hero .htop{display:flex;align-items:center;justify-content:space-between}
+  .hero .badge{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:#fff;
+    background:rgba(95,227,155,.16);border:1px solid rgba(95,227,155,.5);padding:6px 12px;border-radius:100px;
+    display:inline-flex;align-items:center;gap:7px}
+  .hero .badge i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+  .hero .hmain{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-top:26px}
+  .hero .car{font-size:38px;line-height:1.02;letter-spacing:-1px}
+  .hero .plate{display:inline-flex;margin-top:14px;align-items:center;gap:10px;
+    border:1.5px solid rgba(255,255,255,.4);border-radius:10px;padding:8px 14px;font-size:16px;color:#fff;
+    background:rgba(8,11,26,.28);backdrop-filter:blur(6px)}
+  .hero .plate .star{color:#fff;font-size:13px}
+  .hero .hmeta{display:flex;gap:34px;margin-top:28px}
+  .hero .hmeta .k{font-size:12.5px;color:rgba(255,255,255,.62)}
+  .hero .hmeta .v{font-size:18px;color:#fff;margin-top:5px;font-weight:500}
+  .hero .hmeta .v small{font-size:12px;opacity:.7;font-weight:400}
+
+  /* coverage ring inside hero */
+  .scorewrap{flex:0 0 auto;position:relative;width:128px;height:128px;display:flex;align-items:center;justify-content:center}
+  .scorewrap svg{position:absolute;inset:0;width:100%;height:100%}
+  .scorewrap .st{position:relative;text-align:center;line-height:1}
+  .scorewrap .st b{font-size:34px;letter-spacing:-1px}
+  .scorewrap .st .o{font-size:13px;color:rgba(255,255,255,.62)}
+  .scorewrap .st .c{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:6px}
+
+  /* ===== QUICK ACTIONS (right of hero) ===== */
+  .qa{padding:28px 26px;display:flex;flex-direction:column}
+  .qa .qt{font-size:15px;color:#fff;margin:14px 0 4px}
+  .qa .qsub{font-size:13px;color:var(--mut)}
+  .qact{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:20px}
+  .qrow{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:16px;padding:14px 16px;cursor:pointer;
+    transition:border-color .2s,background .2s,transform .2s}
+  .qrow:hover{border-color:var(--line2);background:rgba(137,174,255,.05);transform:translateX(2px)}
+  .qrow .ic{width:38px;height:38px;flex:0 0 auto;border-radius:11px;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--blue2);
+    background:rgba(80,118,255,.06)}
+  .qrow .ic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .qrow .tx{flex:1}
+  .qrow .tx .a{font-size:14.5px;color:#fff}
+  .qrow .tx .b{font-size:12px;color:var(--mut2);margin-top:2px}
+  .qrow .arr{color:var(--mut2);font-size:18px;transition:color .2s,transform .2s}
+  .qrow:hover .arr{color:var(--blue2);transform:translateX(3px)}
+
+  /* ===== MANAGE ROW (docs / claims / renewal) ===== */
+  .mrow{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:18px;align-items:stretch}
+
+  /* documents */
+  .docs{padding:26px}
+  .docs .hd{font-size:15px;color:#fff;margin:12px 0 16px}
+  .doc{display:flex;align-items:center;gap:15px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .doc:last-child{border-bottom:0;padding-bottom:0}
+  .doc .ft{width:42px;height:50px;flex:0 0 auto;border-radius:8px;position:relative;
+    background:linear-gradient(160deg,rgba(137,174,255,.14),rgba(137,174,255,.05));border:1px solid var(--line);
+    display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;font-size:9px;letter-spacing:.5px;color:var(--mut)}
+  .doc .ft::before{content:"";position:absolute;top:6px;left:7px;right:7px;height:2px;border-radius:2px;background:rgba(137,174,255,.28)}
+  .doc .ft::after{content:"";position:absolute;top:12px;left:7px;right:14px;height:2px;border-radius:2px;background:rgba(137,174,255,.18)}
+  .doc .di{flex:1;min-width:0}
+  .doc .di .n{font-size:14.5px;color:#fff}
+  .doc .di .m{font-size:12px;color:var(--mut2);margin-top:3px}
+  .dlchip{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 14px;border-radius:100px;font-size:12.5px;
+    color:var(--ink);background:rgba(137,174,255,.07);border:1px solid var(--line);cursor:pointer;
+    transition:border-color .2s,background .2s,color .2s;white-space:nowrap}
+  .dlchip:hover{border-color:rgba(80,118,255,.45);background:rgba(80,118,255,.1);color:#fff}
+  .dlchip svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+  /* claims history */
+  .claims{padding:26px;display:flex;flex-direction:column}
+  .claims .hd{font-size:15px;color:#fff;margin:12px 0 4px}
+  .claims .sub{font-size:13px;color:var(--mut)}
+  .claimcard{margin-top:auto;border:1px solid var(--line);border-radius:18px;padding:18px;background:rgba(8,11,20,.4)}
+  .claimcard .top{display:flex;align-items:center;justify-content:space-between}
+  .claimcard .settled{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--green);
+    background:rgba(95,227,155,.08);border:1px solid rgba(95,227,155,.22);padding:5px 11px;border-radius:100px}
+  .claimcard .date{font-size:12px;color:var(--mut2)}
+  .claimcard .amt{font-size:32px;letter-spacing:-1px;margin-top:14px}
+  .claimcard .amt small{font-size:14px;color:var(--mut);letter-spacing:0}
+  .claimcard .speed{display:flex;align-items:center;gap:9px;margin-top:12px;font-size:13px;color:var(--ink)}
+  .claimcard .speed .b{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+    background:rgba(80,118,255,.12);color:var(--blue2);font-size:12px}
+  .claims .count{display:flex;align-items:baseline;gap:8px;margin:16px 0 2px}
+  .claims .count b{font-size:40px;letter-spacing:-1px;line-height:1}
+  .claims .count span{font-size:13px;color:var(--mut)}
+
+  /* renewal countdown */
+  .renew{padding:26px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+  .renew .ringbox{position:relative;width:96px;height:96px;margin:14px auto 0}
+  .renew .ringbox svg{width:100%;height:100%}
+  .renew .ringbox .t{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+  .renew .ringbox .t b{font-size:27px;letter-spacing:-1px}
+  .renew .ringbox .t span{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-top:4px}
+  .renew .rmsg{text-align:center;font-size:13.5px;color:var(--ink);margin-top:18px;line-height:1.4}
+  .renew .rmsg b{color:var(--green);font-weight:500}
+  .renew .rdate{text-align:center;font-size:12px;color:var(--mut2);margin-top:8px}
+  .renew .rbtn{margin-top:auto;padding-top:18px}
+  .btnw{height:46px;border-radius:100px;display:inline-flex;align-items:center;justify-content:center;width:100%;
+    font-size:14.5px;color:#2545ff;background:#fff;cursor:pointer;border:0;font-family:inherit;
+    transition:transform .2s ease,box-shadow .2s ease}
+  .btnw:hover{transform:translateY(-2px);box-shadow:0 12px 30px -12px rgba(120,150,255,.6)}
+
+  /* ===== SAVED QUOTES ROW ===== */
+  .savedrow{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 6px}
+  .savedrow::-webkit-scrollbar{height:6px}
+  .quote{flex:0 0 270px;border:1px solid var(--line);background:var(--glass);border-radius:22px;padding:20px 22px;
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);cursor:pointer;
+    transition:border-color .3s,transform .35s cubic-bezier(.2,1,.3,1)}
+  .quote:hover{border-color:var(--line2);transform:translateY(-4px)}
+  .quote .qtop{display:flex;align-items:center;gap:12px}
+  .quote .qlogo{width:42px;height:42px;border-radius:12px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:700;color:#cdd9ff;background:rgba(137,174,255,.1);border:1px solid var(--line)}
+  .quote .qins{font-size:16px;color:#fff;line-height:1.1}
+  .quote .qkind{font-size:12px;color:var(--mut2);margin-top:3px}
+  .quote .qprice{display:flex;align-items:baseline;gap:6px;margin-top:18px}
+  .quote .qprice .n{font-size:28px;letter-spacing:-.5px}
+  .quote .qprice .p{font-size:12.5px;color:var(--mut)}
+  .quote .qmeta{font-size:12px;color:var(--mut2);margin-top:10px}
+  .quote.addq{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;
+    border-style:dashed;border-color:var(--line2);color:var(--mut);flex:0 0 200px}
+  .quote.addq .plus{width:44px;height:44px;border-radius:50%;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--blue2)}
+  .quote.addq:hover{color:#fff}
+
+  /* ===== FOOTER ===== */
+  .foot{display:flex;align-items:center;justify-content:space-between;margin-top:54px;font-size:14px;color:var(--mut2)}
+  .foot .fl{display:flex;gap:24px}.foot a{color:var(--mut)}.foot a:hover{color:#fff}
+
+  @media(max-width:980px){
+    .herorow{grid-template-columns:1fr}
+    .mrow{grid-template-columns:1fr}
+    body{padding:96px 22px 90px}
+    .topnav{left:22px;right:22px}
+  }
+  @media(max-width:560px){
+    .acctbar{flex-direction:column;align-items:flex-start;gap:18px}
+    .hero .hmain{flex-direction:column;align-items:flex-start}
+    .hero .car{font-size:30px}
+  }
+</style>
+</head>
+<body>
+  <div class="topnav"><a class="brand">insuro</a><a class="home" href="showcase.html">← back to showcase</a></div>
+
+  <div class="wrap">
+
+    <!-- ===== TOP BAR ===== -->
+    <div class="acctbar">
+      <div class="who">
+        <div class="ava">A</div>
+        <div>
+          <div class="nm">Andreas K.</div>
+          <div class="em">andreas@mail.cy</div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="eyebrow">personal cabinet</div>
+        <div class="langtog"><span class="on">En</span><span>Ελ</span></div>
+      </div>
+    </div>
+
+    <!-- ===== ACTIVE POLICY ===== -->
+    <div class="sechead"><span class="n">01</span><h2>your active policy</h2><span class="d">everything in one place, never lost</span></div>
+    <div class="herorow">
+
+      <!-- HERO inner-glow card -->
+      <div class="hero">
+        <div class="htop">
+          <span class="lbl">active policy</span>
+          <span class="badge"><i></i> active</span>
+        </div>
+        <div class="hmain">
+          <div>
+            <div class="car">Mercedes-AMG GT</div>
+            <div class="plate"><span class="star">★</span> ABC 123 · CY</div>
+            <div class="hmeta">
+              <div><div class="k">cover</div><div class="v">full kasko</div></div>
+              <div><div class="k">premium</div><div class="v">€1,120 <small>/ yr</small></div></div>
+              <div><div class="k">renews</div><div class="v">14 may 2027</div></div>
+            </div>
+          </div>
+          <!-- coverage score ring -->
+          <div class="scorewrap">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="7"/>
+              <circle cx="50" cy="50" r="44" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"
+                stroke-dasharray="276.5" stroke-dashoffset="22.1" transform="rotate(-90 50 50)"
+                style="filter:drop-shadow(0 0 6px rgba(255,255,255,.7))"/>
+            </svg>
+            <div class="st">
+              <b>92</b><span class="o">/ 100</span>
+              <span class="c">coverage score</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <div class="card qa">
+        <span class="lbl">quick actions</span>
+        <div class="qt">manage your policy</div>
+        <div class="qsub">a few taps — no calls, no office visit.</div>
+        <div class="qact">
+          <div class="qrow">
+            <div class="ic"><svg viewBox="0 0 24 24"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/></svg></div>
+            <div class="tx"><div class="a">documents</div><div class="b">policy, green card, receipts</div></div>
+            <span class="arr">→</span>
+          </div>
+          <div class="qrow">
+            <div class="ic"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+            <div class="tx"><div class="a">report no-claims</div><div class="b">feeds your renewal discount</div></div>
+            <span class="arr">→</span>
+          </div>
+          <div class="qrow">
+            <div class="ic"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg></div>
+            <div class="tx"><div class="a">renew early</div><div class="b">lock today's rate for 2027</div></div>
+            <span class="arr">→</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== MANAGE ===== -->
+    <div class="sechead"><span class="n">02</span><h2>documents, claims & renewal</h2><span class="d">your policy, fully owned</span></div>
+    <div class="mrow">
+
+      <!-- DOCUMENTS -->
+      <div class="card docs">
+        <span class="lbl">my documents</span>
+        <div class="hd">always available, always yours</div>
+        <div class="doc">
+          <div class="ft">PDF</div>
+          <div class="di"><div class="n">policy.pdf</div><div class="m">full kasko · 1.2 mb · issued 14 may 2026</div></div>
+          <span class="dlchip"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> download</span>
+        </div>
+        <div class="doc">
+          <div class="ft">CARD</div>
+          <div class="di"><div class="n">green card</div><div class="m">int'l cover · valid to 14 may 2027</div></div>
+          <span class="dlchip"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> download</span>
+        </div>
+        <div class="doc">
+          <div class="ft">PDF</div>
+          <div class="di"><div class="n">payment receipt</div><div class="m">€1,120 · paid 14 may 2026 · visa ••42</div></div>
+          <span class="dlchip"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> download</span>
+        </div>
+      </div>
+
+      <!-- CLAIMS HISTORY -->
+      <div class="card claims">
+        <span class="lbl">claims history</span>
+        <div class="count"><b>1</b><span>claim · settled</span></div>
+        <div class="sub">fast, paperless, paid to your account.</div>
+        <div class="claimcard">
+          <div class="top"><span class="settled">settled</span><span class="date">mar 2026</span></div>
+          <div class="amt">€2,400 <small>paid</small></div>
+          <div class="speed"><span class="b">⚡</span> settled in 3 days — no office visit</div>
+        </div>
+      </div>
+
+      <!-- RENEWAL COUNTDOWN -->
+      <div class="card renew">
+        <span class="lbl">renewal</span>
+        <div class="ringbox">
+          <svg viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(137,174,255,.14)" stroke-width="8"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#6a87ff" stroke-width="8" stroke-linecap="round"
+              stroke-dasharray="264" stroke-dashoffset="79" transform="rotate(-90 50 50)"
+              style="filter:drop-shadow(0 0 5px rgba(106,135,255,.6))"/>
+          </svg>
+          <div class="t"><b>312</b><span>days</span></div>
+        </div>
+        <div class="rmsg">we'll hold your <b>no-claims discount</b> right up to renewal</div>
+        <div class="rdate">renews 14 may 2027</div>
+        <div class="rbtn"><button class="btnw">renew early</button></div>
+      </div>
+
+    </div>
+
+    <!-- ===== SAVED QUOTES ===== -->
+    <div class="sechead"><span class="n">03</span><h2>saved quotes</h2><span class="d">picked up where you left off</span></div>
+    <div class="savedrow">
+      <div class="quote">
+        <div class="qtop"><div class="qlogo">G</div><div><div class="qins">Gan Direct</div><div class="qkind">full kasko · €0 deductible</div></div></div>
+        <div class="qprice"><span class="n">€900</span><span class="p">/ yr after −20%</span></div>
+        <div class="qmeta">VW Golf · DEF 456 · held 5 days</div>
+      </div>
+      <div class="quote">
+        <div class="qtop"><div class="qlogo">T</div><div><div class="qins">Trust</div><div class="qkind">theft & fire · glass</div></div></div>
+        <div class="qprice"><span class="n">€680</span><span class="p">/ yr</span></div>
+        <div class="qmeta">Toyota Yaris · GHI 789 · held 2 days</div>
+      </div>
+      <div class="quote">
+        <div class="qtop"><div class="qlogo">H</div><div><div class="qins">Hellenic</div><div class="qkind">liability only</div></div></div>
+        <div class="qprice"><span class="n">€420</span><span class="p">/ yr</span></div>
+        <div class="qmeta">scooter · JKL 012 · expires soon</div>
+      </div>
+      <div class="quote addq">
+        <div class="plus">+</div>
+        <div>start a new quote<br>from just a plate</div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <span>insuro · personal cabinet</span>
+      <div class="fl"><a href="showcase.html">showcase</a><a href="hero.html">hero</a><a>support</a></div>
+      <span>© 2026 · cyprus</span>
+    </div>
+  </div>
+</body>
+</html>
