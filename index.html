@@ -355,6 +355,80 @@
   .mfooter .fl a{color:rgba(219,230,255,.45);cursor:pointer;transition:color .2s ease}
   .mfooter .fl a:hover{color:#fff}
   .mfooter .fc{color:rgba(219,230,255,.28);white-space:nowrap}
+
+  /* ============================================================
+     MOBILE — viewport-relative layout (no scaled canvas).
+     Activated by body.m (set in fit() when innerWidth<=600).
+     Desktop scaled-canvas flow is completely untouched.
+     ============================================================ */
+  body.m .stage{width:100vw;height:100vh;background:#070709;transform:none!important}
+  /* car imagery fills the viewport (cover), car centred */
+  body.m .layer,body.m .reveal,body.m .mercphoto,body.m .ccut{
+    left:0;top:0;width:100%;height:100%;transform:none;object-fit:cover}
+  body.m .glow{left:50%;top:48%;width:130vw;height:80vh}
+
+  /* top bar — inside a safe inset, smaller */
+  body.m .topbar{left:20px;right:20px;top:24px;font-size:15px;line-height:1.3}
+  body.m .tb-langs{gap:10px}
+
+  /* headline — wraps, fits the phone */
+  body.m .headline{top:74px;font-size:31px;line-height:1.18;white-space:normal;width:84vw;
+    transform:translateX(-50%) translate(var(--hx,0px),var(--hy,0px))}
+
+  /* bottom link */
+  body.m .nogov{bottom:30px;font-size:13.5px}
+
+  /* plate — fixed 340 so the ready choreography is predictable */
+  body.m .plate{width:340px;left:50%;top:auto;bottom:210px;height:74px;border-radius:18px;
+    gap:12px;padding:0 12px 0 3px}
+  body.m .cy{width:58px;height:58px;border-radius:13px}
+  body.m .cy .stars{width:46px;height:45px}
+  body.m .cy-arrow{font-size:28px}
+  body.m .field-wrap{height:60px}
+  body.m .display{font-size:42px;line-height:42px;height:60px;letter-spacing:.5px}
+  body.m .caret{height:42px}
+  body.m .cycode{left:12px}
+  body.m .cycode .cc{font-size:18px}
+  body.m .cycode .ccsub{font-size:8px;margin-top:3px}
+  body.m .plate.ready .cy{transform:translateX(267px)}
+  body.m .plate.ready .typed{transform:translateX(-26px) scale(.82)}
+
+  /* ---- post-reveal composition: keep only the price chip on mobile ---- */
+  body.m .ctoprow{display:none}
+  body.m .cprice{width:300px;height:96px;left:50%;bottom:auto;top:54vh;border-radius:26px;
+    gap:12px;padding:0 6px 0 22px}
+  body.m .cprice .lbl{width:92px;font-size:20px;line-height:21px}
+  body.m .cpchip{height:84px;border-radius:22px;font-size:46px}
+
+  /* ---- morph: header + single-column offers ---- */
+  body.m .mhead{width:100vw;height:auto}
+  body.m .mhpanel{border-radius:0 0 26px 26px;height:auto}
+  body.m .mhleft{position:static;transform:none;padding:54px 20px 0}
+  body.m .mhleft .mttl{font-size:21px;gap:10px;flex-wrap:wrap;line-height:1.1}
+  body.m .mhleft .mspecs{font-size:13px;gap:10px 14px;flex-wrap:wrap;margin-top:9px}
+  body.m .mhpill{position:static;transform:none;width:auto;height:58px;margin:16px 20px 18px;
+    border-radius:15px;padding:0 5px 0 20px}
+  body.m .mhpill .lbl{font-size:17px}
+  body.m .mhpill .amt{width:150px;height:48px;border-radius:11px;font-size:28px}
+  body.m .mhblur{display:none}
+
+  body.m .mbento{width:100vw;height:100vh;background:#070709}
+  body.m .mlist{padding:238px 16px 48px;gap:12px}
+  body.m .mrow{flex-direction:column;gap:12px}
+  body.m .moc{flex:0 0 auto;height:auto;min-height:0;border-radius:28px;padding:24px 22px 22px}
+  body.m .moc .mt{gap:14px}
+  body.m .moc .nm{font-size:24px}
+  body.m .moc .desc{font-size:15px;max-width:none}
+  body.m .moc .cvg{flex-wrap:wrap;gap:8px 16px;font-size:14px}
+  body.m .moc .mbot{position:static;left:auto;right:auto;bottom:auto;margin-top:20px}
+  body.m .moc .price .n{font-size:34px}
+  body.m .moc .arr{width:58px;height:58px;font-size:32px}
+  body.m .mcontact{height:auto;flex-direction:column;align-items:flex-start;gap:18px;
+    padding:26px 24px;border-radius:30px;margin-top:4px}
+  body.m .mcontact .ct{font-size:23px;max-width:none}
+  body.m .mcontact .b{height:52px}
+  body.m .mfooter{flex-direction:column;align-items:flex-start;gap:16px;padding:34px 22px 20px}
+  body.m .mfooter .fl{flex-wrap:wrap;gap:16px 24px}
 </style>
 </head>
 <body>
@@ -673,6 +747,7 @@
     }
     var bgL=document.querySelector('.layer.bg'), carL=document.querySelector('.layer.car');
     function renderMorph(){
+      if(document.body.classList.contains('m')){ renderMorphMobile(); return; }
       var p=cl2(vy/MORPH2);
       // 1) ФОН-ФОТО исчезает ПЕРВЫМ — машина-вырез остаётся на тёмном (силуэт/видео уже скрыты)
       var sf=cl2(1-p/0.26).toFixed(3);
@@ -693,6 +768,22 @@
       mbento.style.opacity=bF.toFixed(3);
       var lo=Math.min(listMax2, Math.max(0, vy-MORPH2)); mlist.style.transform='translateY('+(-lo).toFixed(0)+'px)';
       if(blurClone) blurClone.style.transform=mlist.style.transform;
+      document.body.classList.toggle('morphing', p>0.5);
+      if(p>=0.999 && !cardsIn){ cardsIn=true; playMocs(); }
+      else if(p<0.5 && cardsIn){ cardsIn=false; hideMocs(); }
+    }
+    // мобильный морф: машина+цена гаснут, проявляется шапка + одноколоночная лента
+    function renderMorphMobile(){
+      var p=cl2(vy/MORPH2);
+      var carF=cl2(1-p/0.8);
+      mercphoto2.style.transform='none'; ccut2.style.transform='none';
+      mercphoto2.style.opacity=carF.toFixed(3); ccut2.style.opacity=carF.toFixed(3);
+      var aF=cl2(1-p/0.5);
+      cpriceEl.style.transform='translateX(-50%)'; cpriceEl.style.opacity=aF.toFixed(3);
+      var bF=cl2((p-0.4)/0.6);
+      mhead.style.opacity=bF.toFixed(3); mhead.style.transform='translateY('+(-10*(1-bF)).toFixed(1)+'px)';
+      mbento.style.opacity=bF.toFixed(3);
+      var lo=Math.min(listMax2, Math.max(0, vy-MORPH2)); mlist.style.transform='translateY('+(-lo).toFixed(0)+'px)';
       document.body.classList.toggle('morphing', p>0.5);
       if(p>=0.999 && !cardsIn){ cardsIn=true; playMocs(); }
       else if(p<0.5 && cardsIn){ cardsIn=false; hideMocs(); }
@@ -782,7 +873,12 @@
     })();
 
     function fit(){var st=document.getElementById('stage');
-      var k=Math.min(innerWidth/1440,innerHeight/810);st.style.transform='scale('+k+')';}
+      var mob=innerWidth<=600;
+      document.body.classList.toggle('m',mob);
+      if(mob){ st.style.transform='none'; }
+      else { var k=Math.min(innerWidth/1440,innerHeight/810);st.style.transform='scale('+k+')'; }
+      measure2();
+    }
     addEventListener('resize',fit);fit();
 
     // верхняя панель: переключение языка кликом (EN / ΕΛ)

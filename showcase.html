@@ -135,7 +135,20 @@
   .foot .fl{display:flex;gap:24px}.foot a{color:var(--mut)}.foot a:hover{color:#fff}
 
   @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:680px){body{padding:80px 18px}.grid{grid-template-columns:1fr}.span2{grid-column:auto}.row2{grid-row:auto}.head h1{font-size:40px}}
+  @media(max-width:680px){
+    body{padding:80px 18px 90px}
+    .grid{grid-template-columns:1fr!important;grid-auto-rows:auto!important}
+    .tile{min-height:240px}
+    .tile .pad{position:relative;height:auto}
+    .chartcard{min-height:248px}
+    .cl .drop{min-height:120px}
+    .span2{grid-column:auto}.row2{grid-row:auto}
+    .head h1{font-size:40px}.head .sub{font-size:16px}
+    .sechead{flex-wrap:wrap;margin:44px 4px 16px}
+    .sechead .d{margin-left:0;flex-basis:100%;margin-top:3px;font-size:13px}
+    .cta h3{max-width:100%}.cta p{max-width:100%}
+    .foot{flex-direction:column;gap:14px;text-align:center;align-items:center}
+  }
 </style>
 </head>
 <body>
