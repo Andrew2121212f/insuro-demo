@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>insuro — hero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:#070709;height:100%;overflow:hidden}
+  body{height:100%;background:#070709;overflow:hidden}
+  ::-webkit-scrollbar{width:0;height:0}
+  /* hero — закреплён (sticky), при скролле сцена красиво ужимается, лента всплывает поверх */
+  .fit{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;z-index:1}
+  .heroscale{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    transform-origin:50% 40%;will-change:transform}
+
+  .stage{position:relative;width:1440px;height:810px;overflow:hidden;background:#070709;
+    transform-origin:center center;font-family:"Host Grotesk",sans-serif}
+
+  /* фон и машина — одним размером, впритык.
+     scale(1.02) — откалибровано (calib.html) для пиксельного совпадения статичной сцены с первым кадром reveal.mp4 */
+  .layer{position:absolute;left:50%;top:calc(50% + 24.5px);transform:translate(-50%,-50%) scale(1.02);
+    width:1526px;height:859px;object-fit:cover;pointer-events:none;user-select:none}
+  .bg{z-index:0}
+  /* свечение за машиной — opacity рулится из JS (мягкое дыхание + разгорается при вводе) */
+  .glow{position:absolute;left:50%;top:44%;width:1560px;height:940px;z-index:1;pointer-events:none;
+    transform:translate(-50%,-50%);mix-blend-mode:screen;opacity:.5;will-change:opacity;
+    background:radial-gradient(52% 50% at 50% 44%,rgba(96,164,255,.85),rgba(48,92,220,.45) 40%,transparent 70%);
+    filter:blur(48px)}
+  .car{z-index:3}
+
+  .headline{position:absolute;left:50%;top:62px;transform:translateX(-50%) translate(var(--hx,0px),var(--hy,0px));z-index:2;
+    transition:opacity .38s ease,filter .38s ease;
+    font-weight:400;font-size:66.03px;line-height:76px;text-align:center;white-space:nowrap;
+    color:#fff}
+
+  .plate{position:absolute;left:calc(50% - 0.5px);top:491.22px;transform:translateX(-50%);z-index:5;
+    width:499px;height:99.551px;border-radius:24.888px;border:2.206px solid rgba(137,174,255,.08);
+    backdrop-filter:blur(29.785398483276367px);-webkit-backdrop-filter:blur(29.785398483276367px);overflow:hidden;
+    display:flex;align-items:center;gap:30px;padding:0 18px 0 2.98px;cursor:text;
+    transition:border-color .45s ease,box-shadow .45s ease}
+  .plate.ready{cursor:pointer;overflow:visible}
+  /* код страны слева (появляется на ready, когда флажок уехал стрелкой) */
+  .cycode{position:absolute;left:18px;top:50%;transform:translateY(-50%) translateX(-8px);z-index:4;
+    display:flex;flex-direction:column;align-items:flex-start;line-height:1;opacity:0;pointer-events:none;
+    transition:opacity .4s ease .28s,transform .55s cubic-bezier(.3,1.3,.5,1) .28s}
+  .cycode .cc{font-size:23px;font-weight:600;color:#dbe6ff;letter-spacing:1px}
+  .cycode .ccsub{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(137,174,255,.55);margin-top:5px}
+  .plate.ready .cycode{opacity:1;transform:translateY(-50%) translateX(0)}
+  /* CY badge: фростед */
+  .cy{position:relative;flex:0 0 auto;width:89.596px;height:89.596px;border-radius:19.91px;z-index:5;
+    background:rgba(116,134,165,.10);backdrop-filter:blur(12.444px);-webkit-backdrop-filter:blur(12.444px);overflow:hidden}
+  .cy .stars{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:71.42px;height:69.528px}
+  .cy .code{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:17.26px;color:#fff;text-transform:uppercase;letter-spacing:.5px}
+  /* стрелка внутри бейджа — появляется при submit */
+  .cy-arrow{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:40px;opacity:0;transform:rotate(-160deg) scale(.35);
+    transition:opacity .4s ease,transform .55s cubic-bezier(.3,1.5,.5,1)}
+  /* анимированный меш-градиент внутри стрелки */
+  .cy::after{content:"";position:absolute;inset:0;border-radius:inherit;z-index:1;opacity:0;transition:opacity .5s ease;
+    background:
+      radial-gradient(65% 65% at 22% 24%,#9bbcff 0%,transparent 60%),
+      radial-gradient(60% 60% at 84% 28%,#3a63ff 0%,transparent 60%),
+      radial-gradient(78% 78% at 52% 94%,#b8d0ff 0%,transparent 62%),
+      #4d70ff;
+    background-size:230% 230%;animation:mesh 4.5s ease-in-out infinite}
+  @keyframes mesh{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
+  .cy{transition:background .45s ease,transform .7s cubic-bezier(.34,1.3,.5,1) .4s}
+  .cy .stars{transition:opacity .35s ease,transform .55s cubic-bezier(.3,1.4,.5,1)}
+  .cy .code{transition:opacity .3s ease}
+  /* READY — сразу при полном вводе: флажок → градиентная стрелка, едет вправо (с делеем), номер заполняется */
+  .plate.ready .cy{background:#4d70ff;transform:translateX(399.5px)}
+  .plate.ready .cy::after{opacity:1}
+  .plate.ready .cy .stars{opacity:0;transform:translate(-50%,-50%) rotate(150deg) scale(.4)}
+  .plate.ready .cy .code{opacity:0}
+  .plate.ready .cy-arrow{opacity:1;transform:rotate(0deg) scale(1)}
+  .plate.ready .typed{transform:translateX(-38px) scale(.82)}
+  .plate.ready .typed .ch{color:#fff}
+  .plate.ready .field-wrap{overflow:visible}
+  /* инпут номера */
+  .field-wrap{position:relative;flex:1 1 auto;height:82px;display:flex;align-items:center;justify-content:flex-start;overflow:hidden}
+  /* скрытый input держит фокус и значение */
+  .hidden-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;background:transparent;
+    cursor:text;font-size:16px;caret-color:transparent;color:transparent;outline:none}
+  /* дисплей номера */
+  .display{position:relative;display:flex;align-items:center;height:82px;font-size:82.168px;line-height:82.168px;
+    letter-spacing:1px;color:#dbe6ff;white-space:pre;text-transform:uppercase;pointer-events:none;
+    transition:transform .5s cubic-bezier(.5,0,.2,1),opacity .5s ease}
+  /* плейсхолдер уезжает с анимацией при начале ввода */
+  .display .ph{position:absolute;left:0;top:50%;transform:translateY(-50%);color:rgba(137,174,255,.12);
+    transition:opacity .4s ease,transform .4s cubic-bezier(.4,0,.2,1),filter .4s ease}
+  .display .ph.out{opacity:0;transform:translateY(calc(-50% - 16px)) scale(.82);filter:blur(5px)}
+  .typed{display:inline-flex;align-items:center;transform-origin:left center;transition:transform .65s cubic-bezier(.4,0,.15,1) .05s}
+  .typed .ch{display:inline-block;animation:charIn .34s cubic-bezier(.22,1.15,.32,1) both;transition:color .35s ease}
+  @keyframes charIn{0%{opacity:0;transform:translateY(16px) scale(.76);filter:blur(3px)}
+    100%{opacity:1;transform:none;filter:blur(0)}}
+  /* тонкий белый курсор, плавная пульсация */
+  .caret{position:absolute;top:50%;left:0;transform:translateY(-50%);width:2px;height:58px;border-radius:2px;
+    background:#fff;pointer-events:none;animation:caretPulse 1.2s ease-in-out infinite}
+  @keyframes caretPulse{0%,100%{opacity:1}50%{opacity:0}}
+  /* кнопка-стрелка, появляется когда номер введён полностью */
+  /* мелкий текст внизу */
+  .nogov{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);z-index:5;
+    font-size:15px;letter-spacing:.2px;color:rgba(255,255,255,.32);cursor:pointer;transition:color .2s ease}
+  .nogov:hover{color:rgba(255,255,255,.7)}
+
+  /* ===== ВЕРХНЯЯ ПАНЕЛЬ — язык (слева) + вход (справа), плоский текст (Figma 991:49227) ===== */
+  .topbar{position:absolute;left:85px;right:85px;top:62px;z-index:6;
+    display:flex;align-items:center;justify-content:space-between;
+    font-family:"Host Grotesk",sans-serif;font-size:20px;line-height:66.03px;color:#fff;
+    transition:opacity .6s ease,filter .6s ease}
+  .tb-langs{display:flex;align-items:center;gap:12px}
+  .tb-langs .lng{opacity:.2;cursor:pointer;transition:opacity .25s ease}
+  .tb-langs .lng.on{opacity:.36}
+  .tb-langs .lng:hover{opacity:.7}
+  .tb-signin{opacity:.32;cursor:pointer;transition:opacity .25s ease}
+  .tb-signin:hover{opacity:.7}
+
+  /* видео проявления машины — ТА ЖЕ геометрия что у .layer, чтобы первый кадр сел на сцену 1:1 (бесшовный стык) */
+  .reveal{position:absolute;left:50%;top:calc(50% + 24.5px);transform:translate(-50%,-50%);
+    width:1526px;height:859px;object-fit:cover;z-index:8;opacity:0;pointer-events:none;
+    transition:opacity 1.1s cubic-bezier(.4,0,.2,1)}
+  /* hi-res фото Mercedes — проявляется поверх последнего кадра видео (резче мыльного кадра).
+     geometry+scale 1.02 откалибровано (calib.html) под последний кадр reveal.mp4 → проявление 1:1 без скачка */
+  .mercphoto{position:absolute;left:50%;top:calc(50% + 24.5px);transform:translate(-50%,-50%) scale(1.02);
+    width:1526px;height:859px;object-fit:cover;z-index:9;opacity:0;pointer-events:none;
+    transition:opacity 1.1s ease}
+  .mercphoto.show{opacity:1}
+  .stage.revealing .reveal{opacity:1}
+  /* UI растворяется мягко — с блюром (как дымка), не просто гаснет */
+  .stage.revealing .headline,.stage.revealing .plate,.stage.revealing .nogov,.stage.revealing .topbar{
+    opacity:0;pointer-events:none;filter:blur(9px);
+    transition:opacity .6s ease,filter .6s ease}
+
+  /* ===== БЛОК B — экран результата поверх Mercedes ===== */
+  .result{position:absolute;inset:0;z-index:10;opacity:0;pointer-events:none;
+    font-family:"Host Grotesk",sans-serif;transition:opacity .6s ease}
+  .result.show{opacity:1;pointer-events:auto}
+  /* скрим: затемняем верх и низ, центр-лицо машины оставляем «короной» */
+  .rscrim{position:absolute;inset:0;pointer-events:none;
+    background:
+      linear-gradient(180deg,rgba(5,7,12,.55) 0%,rgba(5,7,12,0) 26%),
+      linear-gradient(0deg,rgba(5,7,12,.92) 0%,rgba(5,7,12,.62) 22%,rgba(5,7,12,0) 46%);opacity:0;transition:opacity .6s ease}
+  .result.show .rscrim{opacity:1}
+
+  /* шапка результата — сверху */
+  .rhead{position:absolute;left:50%;top:60px;transform:translateX(-50%) translateY(-14px);
+    text-align:center;width:max-content;opacity:0;transition:opacity .55s ease .12s,transform .7s cubic-bezier(.2,1,.3,1) .12s}
+  .result.show .rhead{opacity:1;transform:translateX(-50%) translateY(0)}
+  .reyebrow{font-size:13px;letter-spacing:2.4px;text-transform:uppercase;color:rgba(137,174,255,.55);margin-bottom:14px}
+  .reyebrow b{color:#dbe6ff;font-weight:600;letter-spacing:1px}
+  .rmodel{font-weight:400;font-size:58px;line-height:58px;white-space:nowrap;
+    background:linear-gradient(0deg,rgba(255,255,255,0) -7%,#fff 36%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .rspecs{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:18px;
+    font-size:15px;color:rgba(219,230,255,.78)}
+  .rspecs i{width:3px;height:3px;border-radius:50%;background:rgba(137,174,255,.4)}
+
+  /* экран 1 разгружен: один тонкий cue с лучшей ценой + намёк на скролл */
+  .rcue{position:absolute;left:50%;bottom:118px;transform:translateX(-50%) translateY(20px);
+    display:flex;align-items:center;gap:16px;padding:13px 16px 13px 26px;border-radius:100px;
+    border:1.6px solid rgba(137,174,255,.18);background:rgba(13,17,28,.5);
+    backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);opacity:0;
+    box-shadow:0 24px 60px -22px rgba(40,70,200,.5);
+    transition:opacity .6s ease .26s,transform .8s cubic-bezier(.2,1,.3,1) .26s}
+  .result.show .rcue{opacity:1;transform:translateX(-50%) translateY(0)}
+  .rcue .lbl{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(137,174,255,.6)}
+  .rcue .val{font-size:22px;color:#fff;font-weight:500;display:flex;align-items:baseline;gap:5px}
+  .rcue .val span{font-size:14px;color:rgba(137,174,255,.6)}
+  .rcue .gobtn{width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;color:#fff;font-size:20px;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(120deg,#6a87ff,#3a5bff);box-shadow:0 10px 26px -8px rgba(58,91,255,.7)}
+  /* подсказка скролла */
+  .scrollhint{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);z-index:11;
+    font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(137,174,255,.5);
+    display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;pointer-events:none;
+    transition:opacity .5s ease .5s}
+  .result.show .scrollhint{opacity:1}
+  /* при скролле текст/цена/хинт растворяются — на сцене остаётся только ужимающаяся машина
+     (специфичность выше, чем у .result.show .rcue = 0,3,0) */
+  body.scrolled .result .rhead,
+  body.scrolled .result .rcue,
+  body.scrolled .result .scrollhint{opacity:0;pointer-events:none;transition:opacity .4s ease}
+  .scrollhint .chev{width:18px;height:18px;border-right:2px solid rgba(137,174,255,.5);border-bottom:2px solid rgba(137,174,255,.5);
+    transform:rotate(45deg);animation:bob 1.6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:rotate(45deg) translate(0,0);opacity:.5}50%{transform:rotate(45deg) translate(3px,3px);opacity:1}}
+
+  /* ===== ЛЕНТА ОФФЕРОВ (фиксированная панель, всплывает translateY по wheel-скроллу) ===== */
+  .offers{position:fixed;top:0;left:0;right:0;z-index:2;font-family:"Host Grotesk",sans-serif;
+    padding:34px 0 120px;display:none;transform:translateY(100vh);will-change:transform;
+    background:linear-gradient(180deg,#070810 0,#070810 100%)}
+  .offers.on{display:block}
+  /* синее свечение-атмосфера сверху */
+  .offers::after{content:"";position:absolute;left:50%;top:-6%;width:1300px;height:900px;
+    transform:translateX(-50%);pointer-events:none;z-index:-1;
+    background:radial-gradient(circle at 50% 20%,rgba(80,118,255,.16),rgba(48,92,220,.05) 40%,transparent 64%)}
+  .owrap{max-width:760px;margin:0 auto;padding:0 24px;position:relative}
+  /* «your car» — карточка-шапка ленты */
+  .ocar{display:flex;align-items:center;gap:22px;padding:18px;margin:0 0 34px;
+    border-radius:30px;border:1.6px solid rgba(137,174,255,.14);background:rgba(13,17,28,.5);
+    backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+    box-shadow:0 30px 70px -34px rgba(40,70,200,.5);
+    opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .75s cubic-bezier(.2,1,.3,1)}
+  .ocar.in{opacity:1;transform:none}
+  .ocar img{width:150px;height:96px;object-fit:cover;border-radius:18px;flex:0 0 auto;
+    background:#0c0f17}
+  .ocar .oeyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(137,174,255,.55)}
+  .ocar .oname{font-size:26px;color:#fff;margin:6px 0 7px;line-height:1}
+  .ocar .ospecs{font-size:13.5px;color:rgba(219,230,255,.6)}
+  /* заголовок списка */
+  .olist-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 6px;margin-bottom:14px;
+    opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .7s cubic-bezier(.2,1,.3,1)}
+  .olist-head.in{opacity:1;transform:none}
+  .olist-head .ttl{font-size:17px;color:#fff}
+  .olist-head .sub{font-size:13px;color:rgba(137,174,255,.5);letter-spacing:.5px}
+  /* карточка оффера */
+  .offer{position:relative;border-radius:28px;border:1.6px solid rgba(137,174,255,.1);
+    background:rgba(15,19,30,.5);padding:24px 26px;margin-bottom:12px;overflow:hidden;
+    backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+    opacity:0;transform:translateY(30px) scale(.99);
+    transition:opacity .6s ease,transform .72s cubic-bezier(.2,1,.3,1),border-color .25s ease,background .25s ease}
+  .offer.in{opacity:1;transform:none}
+  .offer.in:hover{transform:translateY(-4px);border-color:rgba(137,174,255,.24);background:rgba(18,23,37,.58)}
+  .offer.best{border-color:rgba(106,135,255,.45);background:rgba(20,26,48,.6);
+    box-shadow:0 0 0 1px rgba(106,135,255,.18),0 30px 70px -30px rgba(50,80,220,.6)}
+  .offer.best::before{content:"";position:absolute;inset:0;z-index:0;opacity:.6;pointer-events:none;
+    background:radial-gradient(90% 130% at 100% 0%,rgba(106,135,255,.16),transparent 55%)}
+  .offer>*{position:relative;z-index:1}
+  .otag{position:absolute;top:0;right:0;z-index:2;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+    color:#fff;background:linear-gradient(120deg,#6a87ff,#3a5bff);padding:7px 16px;border-bottom-left-radius:16px;font-weight:600}
+  .otop{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+  .oins{display:flex;align-items:center;gap:13px}
+  .ologo{width:46px;height:46px;border-radius:13px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    font-size:18px;font-weight:700;color:#cdd9ff;background:rgba(137,174,255,.1);border:1px solid rgba(137,174,255,.12)}
+  .oins .nm{font-size:20px;color:#fff;line-height:1.1}
+  .oins .meta{font-size:12.5px;color:rgba(137,174,255,.5);margin-top:4px}
+  .oprice{text-align:right;flex:0 0 auto}
+  .oprice .num{font-size:32px;color:#fff;letter-spacing:-.5px;line-height:1}
+  .oprice .per{font-size:13px;color:rgba(137,174,255,.55)}
+  .operks{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+  .operks span{font-size:13px;color:rgba(219,230,255,.72);padding:7px 13px;border-radius:100px;
+    background:rgba(137,174,255,.07);border:1px solid rgba(137,174,255,.1)}
+  .oselect{margin-top:20px;width:100%;height:50px;border:0;border-radius:15px;cursor:pointer;
+    font-family:inherit;font-size:15px;font-weight:500;letter-spacing:.3px;color:#cdd9ff;
+    background:rgba(137,174,255,.1);border:1px solid rgba(137,174,255,.14);
+    transition:background .2s ease,color .2s ease}
+  .oselect:hover{background:rgba(137,174,255,.16);color:#fff}
+  .offer.best .oselect{color:#fff;background:linear-gradient(120deg,#6a87ff,#3a5bff);border-color:transparent;
+    box-shadow:0 10px 30px -10px rgba(58,91,255,.7)}
+  .offer.best .oselect:hover{transform:translateY(-1px)}
+  .ofoot{text-align:center;margin-top:34px;font-size:13px;color:rgba(137,174,255,.4);letter-spacing:.3px}
+
+  /* ===== КАРТОЧКИ «машину определили» — проявляются поверх фото после reveal ===== */
+  @keyframes mesh{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
+  .cardlayer{position:absolute;inset:0;z-index:15;font-family:"Host Grotesk",sans-serif;pointer-events:none}
+  .ctoprow{position:absolute;left:16px;top:16px;right:16px;height:278px;display:flex;gap:6px;transform-origin:50% 0;will-change:transform,opacity}
+  .cgc{flex:1 1 0;min-width:0;height:100%;border-radius:36px;overflow:hidden;
+    background:rgba(137,174,255,.15);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    opacity:0;transform:translateY(-30px) scale(.97);will-change:opacity,transform;
+    transition:opacity .6s ease,transform .85s cubic-bezier(.2,1,.3,1)}
+  .cgc.in{opacity:1;transform:none}
+  .cgc .t{font-size:40px;font-weight:400;color:#fff;white-space:nowrap}
+  .cspecs{flex:1 1 0;min-width:0;height:100%;display:flex;flex-direction:column;gap:6px}
+  .csr{flex:1 1 0;display:flex;gap:6px;min-height:0}
+  .cspecs .cgc .t{font-size:34px}
+  .cprice{position:absolute;left:50%;bottom:16px;width:480px;height:130px;border-radius:36px;overflow:hidden;
+    border:2px solid rgba(137,174,255,.15);background:rgba(11,14,22,.62);
+    backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+    display:flex;align-items:center;gap:14px;padding:0 5px 0 30px;
+    opacity:0;transform:translateX(-50%) translateY(36px);will-change:opacity,transform;
+    transition:opacity .6s ease,transform .85s cubic-bezier(.2,1,.3,1)}
+  .cprice.in{opacity:1;transform:translateX(-50%) translateY(0)}
+  .cprice .lbl{width:128px;flex:0 0 auto;font-size:27px;line-height:27px;color:#fff}
+  .cpchip{flex:1 1 auto;height:116px;border-radius:30px;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:70px;line-height:1;position:relative;overflow:hidden}
+  .cpchip::before{content:"";position:absolute;inset:0;z-index:0;border-radius:inherit;
+    background:radial-gradient(65% 65% at 22% 24%,#9bbcff 0%,transparent 60%),
+      radial-gradient(60% 60% at 84% 28%,#3a63ff 0%,transparent 60%),
+      radial-gradient(78% 78% at 52% 94%,#b8d0ff 0%,transparent 62%),#4d70ff;
+    background-size:230% 230%;animation:mesh 4.5s ease-in-out infinite}
+  .cpchip span{position:relative;z-index:1}
+  /* вырез машины поверх карточек (та же геометрия что у mercphoto — выравнивание 1:1) */
+  .ccut{position:absolute;left:50%;top:calc(50% + 24.5px);transform:translate(-50%,-50%) scale(1.02);
+    width:1526px;height:859px;object-fit:cover;pointer-events:none;opacity:0;transition:opacity .7s ease}
+  .ccut.in{opacity:1}
+
+  /* ===== МОРФ: шапка-сводка + бенто-офферы (как в result) ===== */
+  .mesh{position:relative;overflow:hidden}
+  .mesh::before{content:"";position:absolute;inset:0;z-index:0;border-radius:inherit;
+    background:radial-gradient(65% 65% at 22% 24%,#9bbcff 0%,transparent 60%),
+      radial-gradient(60% 60% at 84% 28%,#3a63ff 0%,transparent 60%),
+      radial-gradient(78% 78% at 52% 94%,#b8d0ff 0%,transparent 62%),#4d70ff;
+    background-size:230% 230%;animation:mesh 4.5s ease-in-out infinite}
+  .mesh>span{position:relative;z-index:1}
+  .mhead{position:absolute;left:0;top:0;width:1440px;height:152px;padding-bottom:10px;z-index:14;opacity:0;pointer-events:none;will-change:opacity,transform}
+  /* frosted-bar: размытая копия ленты (blur 26) + стеклянный tint поверх, контент бара сверху */
+  .mhpanel{position:relative;height:100%;border-radius:0 0 60px 60px;overflow:hidden;
+    background:radial-gradient(75% 135% at 50% -12%,rgb(18,25,42),rgb(11,15,26) 52%,rgb(8,11,20) 100%)}
+  .mhblur{position:absolute;inset:0;overflow:hidden;pointer-events:none;border-radius:inherit}
+  .mhblur .mbl{position:absolute;left:0;top:0;width:1440px;filter:blur(26px)}
+  .mhblur::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(137,174,255,.10) 0%,rgba(26,34,54,.34) 55%,rgba(10,14,25,.5) 100%)}
+  .mhblur .moc,.mhblur .mcontact,.mhblur .mfooter{opacity:1!important;transform:none!important;filter:none!important;transition:none!important}
+  .mhblur .moc{background:rgba(137,174,255,.1)!important;border-color:rgba(137,174,255,.16)!important}
+  .mhleft{position:absolute;left:40px;top:50%;transform:translateY(-50%)}
+  .mhleft .mttl{display:flex;align-items:center;gap:28px;font-size:35px;line-height:1;color:#fff}
+  .mhleft .mttl .mplate{color:#fff}
+  .mhleft .mspecs{display:flex;align-items:center;gap:22px;margin-top:16px;font-size:22px;line-height:1;color:#fff}
+  .mhpill{position:absolute;top:50%;right:34px;transform:translateY(-50%);width:470px;height:73px;
+    border:2px solid rgba(137,174,255,.1);border-radius:18px;background:rgba(13,17,28,.5);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0 4px 0 26px}
+  .mhpill .lbl{font-size:22px;color:#fff}
+  .mhpill .amt{width:176px;height:61px;border-radius:12px;background:#5076ff;display:flex;align-items:center;justify-content:center;font-size:35px;color:#fff}
+  .mbento{position:absolute;left:0;top:0;width:1440px;height:810px;overflow:hidden;z-index:13;opacity:0;pointer-events:none}
+  body.morphing .mbento{pointer-events:auto}
+  .mlist{display:flex;flex-direction:column;gap:10px;padding:150px 14px 10px}
+  .mrow{display:flex;gap:10px}
+  .moc{flex:1 1 0;min-width:0;position:relative;border-radius:60px;overflow:hidden;height:290px;cursor:pointer;
+    background:transparent;border:1px solid rgba(137,174,255,.05);
+    padding:32px 36px 36px;
+    opacity:0;transform:translateY(52px) scale(.985);transition:opacity .6s ease,transform .85s cubic-bezier(.2,1,.3,1),border-color .25s,background .25s}
+  .moc.in{opacity:1;transform:none}
+  .moc.in:hover{border-color:rgba(137,174,255,.18)}
+  .moc .mt{display:flex;flex-direction:column;gap:27px;align-items:flex-start}
+  .moc .nm{font-size:28px;color:#fff;line-height:1}
+  .moc .desc{font-size:16px;line-height:1.32;color:rgba(255,255,255,.9);max-width:417px}
+  .moc .cvg{display:flex;gap:22px;font-size:16px;color:#fff;opacity:.3;white-space:nowrap}
+  .moc .mbot{position:absolute;left:36px;right:22px;bottom:17px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .moc .price{display:flex;align-items:flex-end;gap:13px}
+  .moc .price .n{font-size:40px;color:#fff;line-height:1;letter-spacing:-.5px}
+  .moc .price .pu{font-size:18px;line-height:1.05;color:#fff;opacity:.11;width:38px}
+  .moc .arr{flex:0 0 auto;width:68px;height:68px;border-radius:50%;border:1px solid rgba(80,118,255,.14);display:flex;align-items:center;justify-content:center;color:#5076ff;font-size:38px;transition:background .25s,border-color .25s}
+  .moc.in:hover .arr{background:rgba(80,118,255,.1);border-color:rgba(80,118,255,.4)}
+  .mcontact{position:relative;border-radius:50px;padding:0 22px 0 44px;height:100px;display:flex;align-items:center;justify-content:space-between;gap:30px;overflow:hidden;
+    background:radial-gradient(120% 165% at 50% 50%,#0a1236 0%,#13235c 36%,#3a5cff 72%,#86a8ff 89%,#e2edff 100%);
+    box-shadow:inset 0 0 44px 2px rgba(130,165,255,.55), inset 0 0 20px rgba(255,255,255,.28);
+    opacity:0;transform:translateY(52px) scale(.985);margin-bottom:6px;transition:opacity .6s ease,transform .85s cubic-bezier(.2,1,.3,1)}
+  .mcontact::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:radial-gradient(120% 165% at 50% 50%,transparent 56%,rgba(134,168,255,.45) 85%,rgba(226,237,255,.55) 100%);
+    animation:glowpulse 5.5s ease-in-out infinite}
+  @keyframes glowpulse{0%,100%{opacity:.5}50%{opacity:1}}
+  .mcontact.in{opacity:1;transform:none}
+  .mcontact .ct{position:relative;font-size:27px;color:#fff;line-height:1.08;max-width:62%;letter-spacing:-.3px}
+  .mcontact .b{position:relative;height:56px;padding:0 30px;border-radius:100px;display:flex;align-items:center;cursor:pointer;font-size:16px;font-weight:400;color:#2545ff;background:#fff;white-space:nowrap;flex:0 0 auto;transition:transform .25s ease}
+  .mcontact .b:hover{transform:translateY(-2px)}
+  /* футер ленты */
+  .mfooter{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:30px 24px 14px;margin-top:2px;
+    font-family:"Host Grotesk",sans-serif;font-size:14px;color:rgba(219,230,255,.4)}
+  .mfooter .fb{font-size:19px;color:#fff;opacity:.85;letter-spacing:.3px}
+  .mfooter .fl{display:flex;gap:28px}
+  .mfooter .fl a{color:rgba(219,230,255,.45);cursor:pointer;transition:color .2s ease}
+  .mfooter .fl a:hover{color:#fff}
+  .mfooter .fc{color:rgba(219,230,255,.28);white-space:nowrap}
+</style>
+</head>
+<body>
+  <div class="fit"><div class="heroscale" id="heroscale"><div class="stage" id="stage">
+    <img class="layer bg" src="assets/bg.png" alt="">
+    <div class="glow"></div>
+    <img class="layer car" src="assets/car.png" alt="">
+    <video class="reveal" id="reveal" muted playsinline preload="auto" src="assets/reveal.mp4"></video>
+    <img class="mercphoto" id="mercphoto" src="assets/mercedes.png" alt="">
+
+    <!-- карточки «машину определили» поверх фото: карточки сзади → вырез машины → цена -->
+    <div class="cardlayer" id="cardlayer">
+      <div class="ctoprow">
+        <div class="cgc"><div class="t">Mercedes-AMG GT</div></div>
+        <div class="cgc"><div class="t" id="cNum">ABC 123</div></div>
+        <div class="cspecs">
+          <div class="csr"><div class="cgc"><div class="t">coupe</div></div><div class="cgc"><div class="t">577 hp</div></div></div>
+          <div class="csr"><div class="cgc"><div class="t">4.0 v8</div></div><div class="cgc"><div class="t">2021</div></div></div>
+        </div>
+      </div>
+      <img class="ccut" id="ccut" src="assets/mercedes 2.png" alt="">
+      <div class="cprice" id="cprice">
+        <div class="lbl">best rate<br>per year</div>
+        <div class="cpchip"><span>€1,120</span></div>
+      </div>
+    </div>
+
+    <!-- ШАПКА-СВОДКА (87955) — проявляется на морфе, машина садится в центр -->
+    <div class="mhead" id="mhead">
+      <div class="mhpanel">
+        <div class="mhleft">
+          <div class="mttl"><span>Mercedes-AMG GT</span><span class="mplate" id="mNum">ABC 123</span></div>
+          <div class="mspecs"><span>coupe</span><span>4.0 v8 biturbo</span><span>577 hp</span><span>2021</span></div>
+        </div>
+        <div class="mhpill"><span class="lbl">best rate per year</span><span class="amt mesh"><span>€1,120</span></span></div>
+      </div>
+    </div>
+    <!-- БЕНТО-ОФФЕРЫ (UAL) — выезжают снизу на морфе, листаются -->
+    <div class="mbento" id="mbento"><div class="mlist" id="mlist"></div></div>
+
+    <h1 class="headline" id="headline" data-s="main">Car insurance in Cyprus,<br>from just your plate</h1>
+    <div class="plate" id="plate">
+      <div class="cy">
+        <span class="cy-arrow">→</span>
+        <svg class="stars" xmlns="http://www.w3.org/2000/svg" width="71.42" height="69.528" viewBox="0 0 72 70" fill="none">
+          <path d="M35.7098 0L34.155 4.69369L36.5476 5.45622L35.7098 0Z" fill="#5076FF"/><path d="M35.7098 0L37.2647 4.69369L34.872 5.45622L35.7098 0Z" fill="#5076FF"/><path d="M40.4841 3.43262L35.4645 3.41082L35.4763 5.85663L40.4841 3.43262Z" fill="#5076FF"/><path d="M40.4963 3.42188L36.4368 6.31188L34.947 4.30468L40.4963 3.42188Z" fill="#5076FF"/><path d="M38.6675 8.93359L37.1036 4.23354L34.72 4.9897L38.6675 8.93359Z" fill="#5076FF"/><path d="M38.6738 8.92773L34.5967 6.01992L36.0688 4.03053L38.6738 8.92773Z" fill="#5076FF"/><path d="M30.9369 3.43164L35.9566 3.40984L35.9447 5.85565L30.9369 3.43164Z" fill="#5076FF"/><path d="M30.9248 3.4209L34.9844 6.3109L36.4741 4.30371L30.9248 3.4209Z" fill="#5076FF"/><path d="M32.7534 8.93457L34.3173 4.23451L36.7009 4.99067L32.7534 8.93457Z" fill="#5076FF"/><path d="M32.7462 8.92773L36.8234 6.01992L35.3512 4.03053L32.7462 8.92773Z" fill="#5076FF"/><path d="M35.7103 59.2227L34.1555 63.9163L36.5481 64.6789L35.7103 59.2227Z" fill="#5076FF"/><path d="M35.7103 59.2227L37.2652 63.9163L34.8725 64.6789L35.7103 59.2227Z" fill="#5076FF"/><path d="M40.483 62.6553L35.4634 62.6335L35.4752 65.0793L40.483 62.6553Z" fill="#5076FF"/><path d="M40.4951 62.6445L36.4356 65.5345L34.9458 63.5273L40.4951 62.6445Z" fill="#5076FF"/><path d="M38.6686 68.1553L37.1047 63.4552L34.7211 64.2114L38.6686 68.1553Z" fill="#5076FF"/><path d="M38.6752 68.1494L34.598 65.2416L36.0702 63.2522L38.6752 68.1494Z" fill="#5076FF"/><path d="M30.9369 62.6553L35.9566 62.6335L35.9447 65.0793L30.9369 62.6553Z" fill="#5076FF"/><path d="M30.9249 62.6445L34.9845 65.5345L36.4743 63.5273L30.9249 62.6445Z" fill="#5076FF"/><path d="M32.7538 68.1553L34.3176 63.4552L36.7013 64.2114L32.7538 68.1553Z" fill="#5076FF"/><path d="M32.7474 68.1494L36.8246 65.2416L35.3524 63.2522L32.7474 68.1494Z" fill="#5076FF"/><path d="M5.52063 29.6123L3.9658 34.306L6.35844 35.0685L5.52063 29.6123Z" fill="#5076FF"/><path d="M5.52063 29.6123L7.07546 34.306L4.68282 35.0685L5.52063 29.6123Z" fill="#5076FF"/><path d="M10.2941 33.0439L5.27441 33.0221L5.28628 35.468L10.2941 33.0439Z" fill="#5076FF"/><path d="M10.3062 33.0342L6.24659 35.9242L4.75682 33.917L10.3062 33.0342Z" fill="#5076FF"/><path d="M8.47852 38.5469L6.91465 33.8468L4.53105 34.603L8.47852 38.5469Z" fill="#5076FF"/><path d="M8.48511 38.541L4.40795 35.6332L5.88013 33.6438L8.48511 38.541Z" fill="#5076FF"/><path d="M0.747681 33.0439L5.76734 33.0221L5.75547 35.468L0.747681 33.0439Z" fill="#5076FF"/><path d="M0.735718 33.0342L4.79528 35.9242L6.28505 33.917L0.735718 33.0342Z" fill="#5076FF"/><path d="M2.56311 38.5459L4.12697 33.8458L6.51058 34.602L2.56311 38.5459Z" fill="#5076FF"/><path d="M2.55652 38.5391L6.63368 35.6312L5.1615 33.6419L2.55652 38.5391Z" fill="#5076FF"/><path d="M17.6509 12.8945L21.7284 9.98638L20.2565 7.99733L17.6509 12.8945Z" fill="#5076FF"/><path d="M17.6572 12.9023L19.2215 8.20197L21.6047 8.95782L17.6572 12.9023Z" fill="#5076FF"/><path d="M15.8304 7.38379L19.8954 10.2784L21.3798 8.27588L15.8304 7.38379Z" fill="#5076FF"/><path d="M15.8364 7.39062L20.8618 7.37823L20.8556 9.83346L15.8364 7.39062Z" fill="#5076FF"/><path d="M20.6248 3.96777L19.0604 8.66809L21.4435 9.42399L20.6248 3.96777Z" fill="#5076FF"/><path d="M20.6254 3.96777L22.1703 8.65502L19.7678 9.424L20.6254 3.96777Z" fill="#5076FF"/><path d="M23.5668 12.8975L19.5024 10.0033L20.9873 8.00026L23.5668 12.8975Z" fill="#5076FF"/><path d="M23.5732 12.8906L22.0273 8.20279L19.6258 8.97119L23.5732 12.8906Z" fill="#5076FF"/><path d="M25.4005 7.37402L21.3252 10.2797L19.8512 8.28818L25.4005 7.37402Z" fill="#5076FF"/><path d="M25.4 7.37891L20.3737 7.3886L20.3685 9.84652L25.4 7.37891Z" fill="#5076FF"/><path d="M12.5223 23.7412L10.958 19.0408L8.57487 19.7967L12.5223 23.7412Z" fill="#5076FF"/><path d="M12.5294 23.7344L8.45194 20.8262L9.92379 18.8372L12.5294 23.7344Z" fill="#5076FF"/><path d="M6.61304 23.7334L10.6775 20.8392L9.19254 18.8362L6.61304 23.7334Z" fill="#5076FF"/><path d="M6.60693 23.7285L8.15291 19.0407L10.5544 19.8091L6.60693 23.7285Z" fill="#5076FF"/><path d="M4.77905 18.2119L8.85441 21.1176L10.3284 19.1261L4.77905 18.2119Z" fill="#5076FF"/><path d="M4.77905 18.2168L9.80542 18.2265L9.81059 20.6844L4.77905 18.2168Z" fill="#5076FF"/><path d="M14.3505 18.2227L10.2855 21.1173L8.80113 19.1147L14.3505 18.2227Z" fill="#5076FF"/><path d="M14.344 18.2285L9.31862 18.2161L9.32478 20.6713L14.344 18.2285Z" fill="#5076FF"/><path d="M9.55444 14.8057L11.1188 19.506L8.73571 20.2619L9.55444 14.8057Z" fill="#5076FF"/><path d="M9.55444 14.8057L8.00949 19.4929L10.412 20.2619L9.55444 14.8057Z" fill="#5076FF"/><path d="M14.3336 47.8574L9.31888 47.8268L9.33567 50.2638L14.3336 47.8574Z" fill="#5076FF"/><path d="M14.3506 47.8418L10.2957 50.7275L8.80125 48.716L14.3506 47.8418Z" fill="#5076FF"/><path d="M12.5232 53.3613L10.9433 48.6511L8.57572 49.3971L12.5232 53.3613Z" fill="#5076FF"/><path d="M12.5417 53.3447L8.45238 50.4265L9.91234 48.4475L12.5417 53.3447Z" fill="#5076FF"/><path d="M6.61853 53.3457L10.6773 50.4554L9.18665 48.4485L6.61853 53.3457Z" fill="#5076FF"/><path d="M6.60706 53.3369L8.14466 48.6524L10.5545 49.424L6.60706 53.3369Z" fill="#5076FF"/><path d="M9.5426 44.417L11.1201 49.1238L8.75018 49.8732L9.5426 44.417Z" fill="#5076FF"/><path d="M9.54163 44.417L8.0111 49.0985L10.428 49.8732L9.54163 44.417Z" fill="#5076FF"/><path d="M4.78064 47.8271L9.80393 47.8364L9.81218 50.2948L4.78064 47.8271Z" fill="#5076FF"/><path d="M4.78064 47.8223L8.85887 50.7276L10.33 48.7358L4.78064 47.8223Z" fill="#5076FF"/><path d="M25.3827 58.7002L20.3679 58.6696L20.3847 61.1066L25.3827 58.7002Z" fill="#5076FF"/><path d="M25.3993 58.6846L21.3445 61.5703L19.85 59.5588L25.3993 58.6846Z" fill="#5076FF"/><path d="M23.5725 64.2031L21.9927 59.4929L19.625 60.2389L23.5725 64.2031Z" fill="#5076FF"/><path d="M23.5911 64.1855L19.5017 61.2673L20.9617 59.2883L23.5911 64.1855Z" fill="#5076FF"/><path d="M17.6686 64.1865L21.7273 61.2962L20.2367 59.2893L17.6686 64.1865Z" fill="#5076FF"/><path d="M17.6566 64.1777L19.1942 59.4932L21.6041 60.2648L17.6566 64.1777Z" fill="#5076FF"/><path d="M20.5913 55.2598L22.1688 59.9665L19.7989 60.716L20.5913 55.2598Z" fill="#5076FF"/><path d="M20.5897 55.2598L19.0592 59.9413L21.4761 60.716L20.5897 55.2598Z" fill="#5076FF"/><path d="M15.8291 58.668L20.8524 58.6772L20.8606 61.1356L15.8291 58.668Z" fill="#5076FF"/><path d="M15.8291 58.6621L19.9073 61.5675L21.3784 59.5756L15.8291 58.6621Z" fill="#5076FF"/><path d="M65.8984 29.6123L67.4533 34.306L65.0606 35.0685L65.8984 29.6123Z" fill="#5076FF"/><path d="M65.8984 29.6123L64.3436 34.306L66.7362 35.0685L65.8984 29.6123Z" fill="#5076FF"/><path d="M61.1244 33.0439L66.1441 33.0221L66.1322 35.468L61.1244 33.0439Z" fill="#5076FF"/><path d="M61.1124 33.0342L65.172 35.9242L66.6618 33.917L61.1124 33.0342Z" fill="#5076FF"/><path d="M62.9406 38.5459L64.5044 33.8458L66.888 34.602L62.9406 38.5459Z" fill="#5076FF"/><path d="M62.9344 38.5391L67.0116 35.6312L65.5394 33.6419L62.9344 38.5391Z" fill="#5076FF"/><path d="M70.672 33.0439L65.6523 33.0221L65.6642 35.468L70.672 33.0439Z" fill="#5076FF"/><path d="M70.684 33.0342L66.6244 35.9242L65.1346 33.917L70.684 33.0342Z" fill="#5076FF"/><path d="M68.8558 38.5479L67.292 33.8478L64.9084 34.604L68.8558 38.5479Z" fill="#5076FF"/><path d="M68.8624 38.542L64.7853 35.6342L66.2574 33.6448L68.8624 38.542Z" fill="#5076FF"/><path d="M53.7694 12.8965L49.6919 9.98833L51.1638 7.99928L53.7694 12.8965Z" fill="#5076FF"/><path d="M53.7623 12.9023L52.198 8.20197L49.8149 8.95782L53.7623 12.9023Z" fill="#5076FF"/><path d="M55.5896 7.38379L51.5247 10.2784L50.0403 8.27588L55.5896 7.38379Z" fill="#5076FF"/><path d="M55.5836 7.3916L50.5582 7.37921L50.5644 9.83443L55.5836 7.3916Z" fill="#5076FF"/><path d="M50.7955 3.96875L52.3599 8.66907L49.9768 9.42497L50.7955 3.96875Z" fill="#5076FF"/><path d="M50.7948 3.96875L49.2498 8.656L51.6524 9.42497L50.7948 3.96875Z" fill="#5076FF"/><path d="M47.853 12.8965L51.9174 10.0023L50.4325 7.99928L47.853 12.8965Z" fill="#5076FF"/><path d="M47.8469 12.8916L49.3929 8.20377L51.7944 8.97216L47.8469 12.8916Z" fill="#5076FF"/><path d="M46.0186 7.37207L50.0939 10.2777L51.5679 8.28623L46.0186 7.37207Z" fill="#5076FF"/><path d="M46.0186 7.37695L51.0449 7.38665L51.0501 9.84457L46.0186 7.37695Z" fill="#5076FF"/><path d="M58.8972 23.7402L60.4615 19.0399L62.8447 19.7957L58.8972 23.7402Z" fill="#5076FF"/><path d="M58.8909 23.7344L62.9683 20.8262L61.4965 18.8372L58.8909 23.7344Z" fill="#5076FF"/><path d="M64.8058 23.7334L60.7414 20.8392L62.2263 18.8362L64.8058 23.7334Z" fill="#5076FF"/><path d="M64.8125 23.7285L63.2665 19.0407L60.865 19.8091L64.8125 23.7285Z" fill="#5076FF"/><path d="M66.6399 18.21L62.5645 21.1156L61.0906 19.1241L66.6399 18.21Z" fill="#5076FF"/><path d="M66.6399 18.2158L61.6135 18.2255L61.6084 20.6834L66.6399 18.2158Z" fill="#5076FF"/><path d="M57.0695 18.2207L61.1344 21.1153L62.6188 19.1128L57.0695 18.2207Z" fill="#5076FF"/><path d="M57.0754 18.2275L62.1008 18.2151L62.0947 20.6704L57.0754 18.2275Z" fill="#5076FF"/><path d="M61.8651 14.8057L60.3007 19.506L62.6838 20.2619L61.8651 14.8057Z" fill="#5076FF"/><path d="M61.8651 14.8057L63.4101 19.4929L61.0076 20.2619L61.8651 14.8057Z" fill="#5076FF"/><path d="M57.0858 47.8574L62.1006 47.8268L62.0838 50.2638L57.0858 47.8574Z" fill="#5076FF"/><path d="M57.0692 47.8418L61.1241 50.7275L62.6185 48.716L57.0692 47.8418Z" fill="#5076FF"/><path d="M58.8969 53.3604L60.4767 48.6501L62.8443 49.3962L58.8969 53.3604Z" fill="#5076FF"/><path d="M58.8781 53.3438L62.9674 50.4255L61.5075 48.4465L58.8781 53.3438Z" fill="#5076FF"/><path d="M64.8013 53.3447L60.7425 50.4544L62.2332 48.4475L64.8013 53.3447Z" fill="#5076FF"/><path d="M64.8127 53.3359L63.2751 48.6514L60.8653 49.423L64.8127 53.3359Z" fill="#5076FF"/><path d="M61.877 44.417L60.2994 49.1238L62.6694 49.8732L61.877 44.417Z" fill="#5076FF"/><path d="M61.879 44.417L63.4096 49.0985L60.9926 49.8732L61.879 44.417Z" fill="#5076FF"/><path d="M66.6394 47.8271L61.6161 47.8364L61.6079 50.2948L66.6394 47.8271Z" fill="#5076FF"/><path d="M66.6394 47.8223L62.5612 50.7276L61.0901 48.7358L66.6394 47.8223Z" fill="#5076FF"/><path d="M46.036 58.6963L51.0508 58.6657L51.034 61.1027L46.036 58.6963Z" fill="#5076FF"/><path d="M46.0194 58.6816L50.0742 61.5673L51.5687 59.5558L46.0194 58.6816Z" fill="#5076FF"/><path d="M47.8469 64.1992L49.4268 59.489L51.7944 60.235L47.8469 64.1992Z" fill="#5076FF"/><path d="M47.8284 64.1826L51.9177 61.2644L50.4578 59.2854L47.8284 64.1826Z" fill="#5076FF"/><path d="M53.7496 64.1816L49.6909 61.2913L51.1815 59.2844L53.7496 64.1816Z" fill="#5076FF"/><path d="M53.7615 64.1729L52.2239 59.4883L49.814 60.2599L53.7615 64.1729Z" fill="#5076FF"/><path d="M50.827 55.2559L49.2495 59.9626L51.6194 60.7121L50.827 55.2559Z" fill="#5076FF"/><path d="M50.8285 55.2559L52.359 59.9373L49.9421 60.7121L50.8285 55.2559Z" fill="#5076FF"/><path d="M55.5908 58.665L50.5675 58.6743L50.5593 61.1327L55.5908 58.665Z" fill="#5076FF"/><path d="M55.5903 58.6602L51.5121 61.5655L50.041 59.5737L55.5903 58.6602Z" fill="#5076FF"/>
+        </svg>
+        <div class="code">CY</div>
+      </div>
+      <div class="cycode" aria-hidden="true"><span class="cc">CY</span><span class="ccsub">EU</span></div>
+      <div class="field-wrap">
+        <input class="hidden-input" id="hidden" type="text" maxlength="8" autocomplete="off" spellcheck="false" autofocus>
+        <div class="display" id="display">
+          <span class="ph" id="ph">EKK 300</span>
+          <span class="typed" id="typed"></span>
+        </div>
+        <span class="caret" id="caret"></span>
+      </div>
+    </div>
+
+    <div class="nogov">I don't have a plate number</div>
+
+    <!-- ВЕРХНЯЯ ПАНЕЛЬ: язык (слева) + вход (справа) -->
+    <div class="topbar">
+      <div class="tb-langs">
+        <span class="lng on">En</span>
+        <span class="lng">Ελ</span>
+      </div>
+      <div class="tb-signin">Sign in</div>
+    </div>
+
+    <!-- БЛОК B — результат поверх Mercedes -->
+    <div class="result" id="result" aria-hidden="true">
+      <div class="rscrim"></div>
+      <div class="rhead">
+        <div class="reyebrow">recognized from your plate · <b>ABC 123</b> CY</div>
+        <h2 class="rmodel">Mercedes-AMG GT</h2>
+        <div class="rspecs"><span>coupe</span><i></i><span>4.0 v8 biturbo</span><i></i><span>577 hp</span><i></i><span>2021</span></div>
+      </div>
+      <div class="rcue">
+        <span class="lbl">best rate</span>
+        <span class="val">€1,120<span>/ year</span></span>
+        <button class="gobtn" id="gobtn" aria-label="see offers">↓</button>
+      </div>
+      <div class="scrollhint"><span>scroll for offers</span><span class="chev"></span></div>
+    </div>
+  </div></div></div>
+
+  <!-- ЛЕНТА ОФФЕРОВ -->
+  <section class="offers" id="offers">
+    <div class="owrap">
+      <div class="ocar">
+        <img src="assets/car-final.jpg" alt="Mercedes-AMG GT">
+        <div class="ocar-info">
+          <div class="oeyebrow">your car · ABC 123 CY</div>
+          <div class="oname">Mercedes-AMG GT</div>
+          <div class="ospecs">coupe · 4.0 v8 biturbo · 577 hp · 2021</div>
+        </div>
+      </div>
+      <div class="olist-head">
+        <span class="ttl">5 offers for your car</span>
+        <span class="sub">sorted by price</span>
+      </div>
+      <div id="offerlist"></div>
+      <div class="ofoot">prices for 12 months · full kasko unless noted · cyprus</div>
+    </div>
+  </section>
+
+  <script>
+    // ввод номера + тонкий белый курсор в позиции набора
+    var input=document.getElementById('hidden'),display=document.getElementById('display'),
+        caret=document.getElementById('caret'),plate=document.getElementById('plate'),
+        fw=document.querySelector('.field-wrap'),headline=document.getElementById('headline'),
+        ph=document.getElementById('ph'),typed=document.getElementById('typed');
+    var HL_MAIN='Car insurance in Cyprus,<br>from just your plate', HL_CTA='Press to find<br>your best rate';
+    function setHeadline(complete){
+      var want=complete?'cta':'main';
+      if(headline.dataset.s===want) return;
+      headline.dataset.s=want; headline.style.opacity='0'; headline.style.filter='blur(9px)';
+      setTimeout(function(){ headline.innerHTML=complete?HL_CTA:HL_MAIN; headline.style.opacity=''; headline.style.filter=''; },320);
+    }
+    var glowEl=document.querySelector('.glow'),glowT=0;
+    var prev='';
+    function format(){
+      var raw=input.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+      var f = raw.length>3 ? raw.slice(0,3)+' '+raw.slice(3) : raw;   // авто-пробел после 3 букв
+      if(input.value!==f) input.value=f;
+      return f;
+    }
+    function render(){
+      var v=format();
+      ph.classList.toggle('out', v!=='');
+      if(v===''){ typed.innerHTML=''; }
+      else{
+        var html='';
+        for(var i=0;i<v.length;i++){
+          var c=v[i]===' '?' ':v[i];
+          var isNew=i>=prev.length;                 // анимируем только новые символы
+          html+='<span class="ch"'+(isNew?'':' style="animation:none"')+'>'+c+'</span>';
+        }
+        typed.innerHTML=html;
+      }
+      prev=v; placeCaret();
+      // состояние «номер введён полностью»: 3 буквы + 3 цифры
+      var complete = v.replace(/ /g,'').length===6;
+      plate.classList.toggle('ready',complete);
+      caret.style.display = complete ? 'none' : 'block';
+      setHeadline(complete);
+      if(complete){ var cs=typed.querySelectorAll('.ch'); for(var k=0;k<cs.length;k++) cs[k].style.transitionDelay=(k*0.04)+'s'; }
+    }
+    function placeCaret(){
+      var w=fw.getBoundingClientRect();
+      if(input.value===''){ caret.style.left='0px'; return; }
+      var t=typed.getBoundingClientRect();
+      caret.style.left=(t.right-w.left)+'px';
+    }
+    var energy=0, energyTarget=0;
+    function flash(){ energyTarget=Math.min(1.3, energyTarget+0.55); }   // цель разгорания; energy плавно тянется к ней
+    var stage=document.getElementById('stage'), revealEl=document.getElementById('reveal'), resultEl=document.getElementById('result'),
+        mercphoto=document.getElementById('mercphoto');
+    // данные офферов (демо — легко менять)
+    var OFFERS=[
+      {ins:'Gan Direct',  logo:'G', price:'€1,120', meta:'full kasko · instant policy', perks:['full kasko','roadside 24/7','glass cover'], best:true},
+      {ins:'Trust Insurance', logo:'T', price:'€1,290', meta:'full kasko · courtesy car', perks:['full kasko','roadside','courtesy car']},
+      {ins:'CNP Cyprialife', logo:'C', price:'€1,460', meta:'full kasko · personal accident', perks:['full kasko','glass cover','personal accident']},
+      {ins:'Universal Life', logo:'U', price:'€1,540', meta:'full kasko', perks:['full kasko','roadside','natural disasters']},
+      {ins:'Ancoria', logo:'A', price:'€1,690', meta:'full kasko · theft+', perks:['full kasko','glass cover','theft protection']}
+    ];
+    function buildOffers(){
+      var list=document.getElementById('offerlist'); if(!list||list.children.length)return;
+      var html='';
+      for(var n=0;n<OFFERS.length;n++){var o=OFFERS[n];
+        var perks=''; for(var p=0;p<o.perks.length;p++) perks+='<span>'+o.perks[p]+'</span>';
+        html+='<article class="offer'+(o.best?' best':'')+'">'
+          +(o.best?'<div class="otag">best price</div>':'')
+          +'<div class="otop"><div class="oins"><div class="ologo">'+o.logo+'</div>'
+          +'<div><div class="nm">'+o.ins+'</div><div class="meta">'+o.meta+'</div></div></div>'
+          +'<div class="oprice"><div class="num">'+o.price+'</div><div class="per">/ year</div></div></div>'
+          +'<div class="operks">'+perks+'</div>'
+          +'<button class="oselect">'+(o.best?'select best rate':'select')+'</button>'
+          +'</article>';
+      }
+      list.innerHTML=html;
+    }
+    var scrolledOnce=false;
+    function showResult(){ if(window.__shown)return; window.__shown=true;
+      try{revealEl.pause();revealEl.currentTime=Math.max(0,revealEl.duration-0.04);}catch(e){}  // держим финальный кадр
+      if(mercphoto) mercphoto.classList.add('show');   // фото машины (PNG) проявляется поверх кадра видео
+      setTimeout(function(){
+        // фото проявилось → видео больше не нужно, убираем его с фона
+        revealEl.style.transition='opacity .5s ease'; revealEl.style.opacity='0';
+        // фото проявилось → вырез машины поверх, карточки сзади (волной), цена — в конце
+        var ccut=document.getElementById('ccut'); if(ccut) ccut.classList.add('in');
+        var cs=document.querySelectorAll('.cardlayer .cgc');
+        for(var i=0;i<cs.length;i++){ cs[i].style.transitionDelay=(0.1+i*0.07).toFixed(2)+'s'; cs[i].classList.add('in'); }
+        var cp=document.getElementById('cprice'); if(cp){ cp.style.transitionDelay=(0.1+cs.length*0.07+0.15).toFixed(2)+'s'; cp.classList.add('in'); }
+      }, 1000);   // ждём пока фото полностью проявится
+      // когда композиция собралась — включаем морф-скролл: вниз → машина в шапку + офферы, вверх → главный
+      setTimeout(function(){
+        buildMlist(); mocs=document.querySelectorAll('.moc, .mcontact'); measure2(); setupTilt(); buildBlurClone();
+        mercphoto.style.transition='none'; revealEl.style.transition='none';   // прямой скраб без лага
+        var _cp=document.getElementById('cprice'); if(_cp)_cp.style.transition='none';   // цена скрабится без лага при выезде вверх
+        // прячем старую силуэт-сцену под фото (иначе при морфе проступает чужая машина за гаснущим фото)
+        var _bg=document.querySelector('.layer.bg'), _car=document.querySelector('.layer.car');
+        if(_bg){_bg.style.transition='none';_bg.style.opacity='0';}
+        if(_car){_car.style.transition='none';_car.style.opacity='0';}
+        revealEl.style.opacity='0';
+        scrollOn=true;
+      }, 2400);
+    }
+    // stagger-появление элементов ленты по мере въезда в кадр
+    function observeOffers(){
+      var els=document.querySelectorAll('.ocar,.olist-head,.offer');
+      if(!('IntersectionObserver' in window)){ els.forEach(function(e){e.classList.add('in');}); return; }
+      var io=new IntersectionObserver(function(ents){
+        ents.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+      },{threshold:.18,rootMargin:'0px 0px -8% 0px'});
+      els.forEach(function(e){io.observe(e);});
+    }
+    // ── МОРФ + инерционный скролл: машина ужимается и уходит в шапку, появляются офферы ──
+    var mercphoto2=document.getElementById('mercphoto'), ccut2=document.getElementById('ccut'),
+        ctoprow=document.querySelector('.ctoprow'), cpriceEl=document.getElementById('cprice'),
+        mhead=document.getElementById('mhead'), mbento=document.getElementById('mbento'), mlist=document.getElementById('mlist');
+    var OFF=[
+      {n:'Gan Direct',cv:'full kasko · instant',pr:'€1,120',desc:'buy online in two minutes — cover starts the moment you pay, no paperwork'},
+      {n:'Trust Insurance',cv:'full kasko · courtesy car',pr:'€1,290',desc:'a courtesy car while yours is in the shop, anywhere on the island'},
+      {n:'CNP Cyprialife',cv:'full kasko · accident',pr:'€1,460',desc:'broad cover with personal-accident protection for you and every passenger'},
+      {n:'Universal Life',cv:'full kasko · disasters',pr:'€1,540',desc:'includes natural disasters — floods, storms and wildfire damage covered'},
+      {n:'Ancoria',cv:'full kasko · theft+',pr:'€1,690',desc:'enhanced theft protection with tracking and fast claim payout'},
+      {n:'Eurolife',cv:'full kasko · roadside',pr:'€1,780',desc:'courtesy car and 24/7 roadside on every policy, no extra fee'},
+      {n:'Pancyprian',cv:'full kasko · local',pr:'€1,850',desc:'local insurer, local garages — claims settled on the island in days'},
+      {n:'Alpha Insurance',cv:'full kasko · glass',pr:'€1,920',desc:'free windscreen and glass repair, with unlimited claims a year'},
+      {n:'Minerva',cv:'full kasko · flexible',pr:'€2,040',desc:'flexible cover you can tailor — add or drop options anytime'}
+    ];
+    function buildMlist(){ if(mlist.children.length)return; var h='';
+      for(var r=0;r<3;r++){ h+='<div class="mrow">';
+        for(var c=0;c<3;c++){ var o=OFF[r*3+c];
+          var tags=o.cv.split(' · ').map(function(t){return '<span>'+t+'</span>';}).join('');
+          h+='<div class="moc">'
+            +'<div class="mt"><div class="nm">'+o.n+'</div><div class="desc">'+o.desc+'</div><div class="cvg">'+tags+'</div></div>'
+            +'<div class="mbot"><div class="price"><span class="n">'+o.pr+'</span><span class="pu">per year</span></div>'
+            +'<div class="arr">→</div></div>'
+            +'</div>';
+        } h+='</div>'; }
+      h+='<div class="mcontact"><div class="ct">didn’t find the right cover?</div>'
+        +'<a class="b">talk to an advisor</a></div>';
+      h+='<div class="mfooter"><span class="fb">insuro</span>'
+        +'<div class="fl"><a>how it works</a><a>insurers</a><a>support</a><a>terms</a></div>'
+        +'<span class="fc">© 2026 · cyprus</span></div>';
+      mlist.innerHTML=h; }
+    var mocs=[];
+    var vy=0, vyTarget=0, vyRaf=null, MORPH2=480, listMax2=0, scrollOn=false, cardsIn=false;
+    function eio2(x){return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;}
+    function cl2(v){return Math.min(1,Math.max(0,v));}
+    function measure2(){ listMax2=Math.max(0, mlist.offsetHeight - mbento.offsetHeight + 10); }
+    // блюр-копия ленты под шапкой (обрезана по прямоугольнику шапки)
+    var blurClone=null;
+    function buildBlurClone(){ if(blurClone)return; var mp=document.querySelector('.mhpanel'); if(!mp||!mlist)return;
+      var w=document.createElement('div'); w.className='mhblur';
+      var c=mlist.cloneNode(true); c.removeAttribute('id'); c.classList.add('mbl');
+      w.appendChild(c); mp.insertBefore(w, mp.firstChild); blurClone=c;
+    }
+    function playMocs(){ for(var i=0;i<mocs.length;i++){ mocs[i].style.transitionDelay=(0.05+i*0.05).toFixed(2)+'s'; mocs[i].classList.add('in'); } }
+    function hideMocs(){ for(var i=0;i<mocs.length;i++){ mocs[i].classList.remove('in'); mocs[i].style.transitionDelay='0s'; } }
+    // 3D-наклон карточек по курсору
+    var tiltDone=false;
+    function setupTilt(){ if(tiltDone)return; tiltDone=true;
+      document.querySelectorAll('.moc').forEach(function(c){
+        c.addEventListener('mousemove',function(e){ if(!scrollOn)return;
+          var r=c.getBoundingClientRect();
+          var px=(e.clientX-r.left)/r.width-0.5, py=(e.clientY-r.top)/r.height-0.5;
+          c.style.transition='transform .08s ease';
+          c.style.transform='perspective(900px) rotateY('+(px*9).toFixed(2)+'deg) rotateX('+(-py*9).toFixed(2)+'deg) scale(1.035)';
+        });
+        c.addEventListener('mouseleave',function(){
+          c.style.transition='transform .55s cubic-bezier(.2,1,.3,1)';
+          c.style.transform='';
+        });
+      });
+    }
+    var bgL=document.querySelector('.layer.bg'), carL=document.querySelector('.layer.car');
+    function renderMorph(){
+      var p=cl2(vy/MORPH2);
+      // 1) ФОН-ФОТО исчезает ПЕРВЫМ — машина-вырез остаётся на тёмном (силуэт/видео уже скрыты)
+      var sf=cl2(1-p/0.26).toFixed(3);
+      mercphoto2.style.opacity=sf;
+      // 2) машина (вырез-PNG) встаёт наверх в шапку ПОСЛЕ того как фон ушёл
+      var cp=cl2((p-0.2)/0.8), e=eio2(cp);
+      var carTf='translate(-50%,-50%) translateY('+(-363*e).toFixed(0)+'px) scale('+(1.02-0.865*e).toFixed(4)+')';
+      ccut2.style.transform=carTf; mercphoto2.style.transform=carTf;
+      // карточки + цена растворяются вместе с подъёмом машины
+      var aF=cl2(1-(p-0.2)/0.38), up2=eio2(1-aF);
+      ctoprow.style.opacity=aF.toFixed(3);
+      ctoprow.style.transform='translateY('+(-120*up2).toFixed(1)+'px) scale('+(1-0.06*up2).toFixed(3)+')';
+      cpriceEl.style.opacity=aF.toFixed(3);
+      cpriceEl.style.transform='translateX(-50%) translateY('+(-90*up2).toFixed(1)+'px)';
+      // шапка-сводка + офферы — позже
+      var bF=cl2((p-0.5)/0.5);
+      mhead.style.opacity=bF.toFixed(3); mhead.style.transform='translateY('+(-12*(1-bF)).toFixed(1)+'px)';
+      mbento.style.opacity=bF.toFixed(3);
+      var lo=Math.min(listMax2, Math.max(0, vy-MORPH2)); mlist.style.transform='translateY('+(-lo).toFixed(0)+'px)';
+      if(blurClone) blurClone.style.transform=mlist.style.transform;
+      document.body.classList.toggle('morphing', p>0.5);
+      if(p>=0.999 && !cardsIn){ cardsIn=true; playMocs(); }
+      else if(p<0.5 && cardsIn){ cardsIn=false; hideMocs(); }
+    }
+    // блюр+гашение рядов, въезжающих ПОД шапку (надёжно, через filter — не зависит от backdrop-filter)
+    function frostRows(){ if(!mlist||!mlist.children.length)return;
+      var sr=stage.getBoundingClientRect(), sc=sr.height/810; if(sc<=0)return;
+      var kids=mlist.children;
+      for(var i=0;i<kids.length;i++){ var el=kids[i];
+        var topY=(el.getBoundingClientRect().top - sr.top)/sc;     // верх ряда в координатах сцены
+        var f=cl2((142-topY)/95);                                   // узкая зона ≈ высоты шапки, быстрое гашение
+        if(f<0.004){ if(el.style.filter){el.style.filter='';el.style.opacity='';} }
+        else { el.style.filter='blur('+(f*7).toFixed(1)+'px)'; el.style.opacity=(1-f).toFixed(3); }
+      }
+    }
+    function loop2(){ vy+=(vyTarget-vy)*0.08; if(Math.abs(vyTarget-vy)<0.25){vy=vyTarget; renderMorph(); vyRaf=null; return;} renderMorph(); vyRaf=requestAnimationFrame(loop2); }
+    // snap-морф: один скролл вниз доводит анимацию сам; вверх из шапки — сам назад; между — свободный листинг
+    var snapLock=false, tweenRaf=null;
+    function lockSnap(ms){ snapLock=true; setTimeout(function(){snapLock=false;}, ms||1050); }
+    function eioC(t){ return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }   // ease-in-out cubic — мягкий старт/финиш
+    function tweenTo(target,dur){
+      if(vyRaf){cancelAnimationFrame(vyRaf);vyRaf=null;}
+      if(tweenRaf){cancelAnimationFrame(tweenRaf);}
+      var from=vy, t0=null;
+      function step(ts){ if(t0===null)t0=ts; var p=Math.min(1,(ts-t0)/dur), e=eioC(p);
+        vy=from+(target-from)*e; vyTarget=vy; renderMorph();
+        if(p<1){ tweenRaf=requestAnimationFrame(step); } else { tweenRaf=null; vy=target; vyTarget=target; renderMorph(); }
+      }
+      tweenRaf=requestAnimationFrame(step);
+    }
+    function nudge2(d){ if(!scrollOn||snapLock)return;
+      if(d>0){                                                        // вниз
+        if(vyTarget<MORPH2-1){ lockSnap(1120); tweenTo(MORPH2,1080); }  // плавная авто-доводка морфа
+        else { if(tweenRaf){cancelAnimationFrame(tweenRaf);tweenRaf=null;} vyTarget=Math.min(MORPH2+listMax2, vyTarget+d); if(vyRaf==null)vyRaf=requestAnimationFrame(loop2); }
+      } else {                                                        // вверх
+        if(vyTarget>MORPH2+1){ if(tweenRaf){cancelAnimationFrame(tweenRaf);tweenRaf=null;} vyTarget=Math.max(MORPH2, vyTarget+d); if(vyRaf==null)vyRaf=requestAnimationFrame(loop2); }
+        else { lockSnap(1000); tweenTo(0,960); }                       // плавный возврат на главный
+      }
+    }
+    addEventListener('wheel',function(ev){ if(!window.__shown)return; ev.preventDefault(); if(!scrollOn)return; if(Math.abs(ev.deltaY)<1)return; nudge2(ev.deltaY>0?Math.min(190,ev.deltaY):Math.max(-190,ev.deltaY)); },{passive:false});
+    var tY2=null;
+    addEventListener('touchstart',function(ev){tY2=ev.touches[0].clientY;},{passive:true});
+    addEventListener('touchmove',function(ev){ if(tY2==null||!scrollOn)return; var dy=tY2-ev.touches[0].clientY; if(Math.abs(dy)>2){ev.preventDefault(); nudge2(dy*1.5); tY2=ev.touches[0].clientY;} },{passive:false});
+    addEventListener('resize',measure2);
+    function reveal(){ stage.classList.add('revealing');
+      energyTarget=Math.max(energyTarget,1.9);   // вспышка свечения — «ignition» в момент запуска
+      // старая силуэт-машина (нейтральная) больше не нужна — плавно гасим её под видео
+      var _bg=document.querySelector('.layer.bg'), _car=document.querySelector('.layer.car');
+      if(_bg){_bg.style.transition='opacity .9s ease';_bg.style.opacity='0';}
+      if(_car){_car.style.transition='opacity .9s ease';_car.style.opacity='0';}
+      try{revealEl.currentTime=0;revealEl.play();}catch(e){}
+      revealEl.addEventListener('ended',showResult,{once:true});
+      setTimeout(showResult,5200);   // фоллбэк, если 'ended' не сработает
+    }
+    function submit(){ if(!plate.classList.contains('ready')||stage.classList.contains('revealing'))return;
+      var num=(input.value||'').trim();   // реальный введённый номер → в композицию и шапку морфа
+      if(num){ var cN=document.getElementById('cNum'), mN=document.getElementById('mNum');
+        if(cN)cN.textContent=num; if(mN)mN.textContent=num; }
+      reveal();   // хореография уже отыграла на вводе; Enter/клик — запуск проявления
+    }
+    input.addEventListener('input',function(){render();flash();});
+    input.addEventListener('keydown',function(e){ if(e.key==='Enter'){e.preventDefault();submit();} });
+    input.addEventListener('focus',placeCaret);
+    plate.addEventListener('mousedown',function(e){e.preventDefault();
+      if(plate.classList.contains('ready')&&!plate.classList.contains('submitting')){submit();}
+      else{input.focus();}});
+    addEventListener('resize',placeCaret);
+    render();
+    setTimeout(function(){try{input.focus({preventScroll:true});}catch(e){input.focus();}},60);
+
+    // мягкий параллакс: текст за машиной / машина / номер на разной глубине
+    var headline=document.querySelector('.headline');
+    var tx=0,ty=0,mx=0,my=0;
+    addEventListener('mousemove',function(e){mx=(e.clientX/innerWidth-.5)*2;my=(e.clientY/innerHeight-.5)*2;});
+    (function loop(){
+      tx+=(mx-tx)*.06; ty+=(my-ty)*.06;
+      headline.style.setProperty('--hx',(tx*-4).toFixed(2)+'px');
+      headline.style.setProperty('--hy',(ty*-2.5).toFixed(2)+'px');
+      // живое свечение: дыхание + неравномерная деформация + плавное разгорание от ввода
+      glowT+=0.018; energyTarget*=0.965; energy+=(energyTarget-energy)*0.10;
+      var sx=1+0.05*Math.sin(glowT*0.9)+energy*0.07;
+      var sy=1+0.045*Math.sin(glowT*0.65+1.3)+energy*0.05;
+      var dx=15*Math.sin(glowT*0.5), dy=11*Math.sin(glowT*0.4+2);
+      glowEl.style.opacity=document.body.classList.contains('morphing')?'0':(0.46 + 0.11*Math.sin(glowT) + energy*0.45).toFixed(3);
+      glowEl.style.transform='translate(calc(-50% + '+dx.toFixed(1)+'px), calc(-50% + '+dy.toFixed(1)+'px)) scale('+sx.toFixed(3)+','+sy.toFixed(3)+')';
+      requestAnimationFrame(loop);
+    })();
+
+    function fit(){var st=document.getElementById('stage');
+      var k=Math.min(innerWidth/1440,innerHeight/810);st.style.transform='scale('+k+')';}
+    addEventListener('resize',fit);fit();
+
+    // верхняя панель: переключение языка кликом (EN / ΕΛ)
+    (function(){ var langs=document.querySelectorAll('.topbar .lng');
+      langs.forEach(function(l){ l.addEventListener('click',function(){
+        langs.forEach(function(x){x.classList.remove('on');}); l.classList.add('on');
+      }); });
+    })();
+  </script>
+</body>
+</html>

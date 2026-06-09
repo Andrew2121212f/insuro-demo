@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>insuro — product showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#070709; --blue:#5076ff; --blue2:#6a87ff;
+    --ink:#dbe6ff; --mut:rgba(219,230,255,.55); --mut2:rgba(219,230,255,.32);
+    --line:rgba(137,174,255,.10); --line2:rgba(137,174,255,.18);
+    --glass:rgba(137,174,255,.04);
+  }
+  html,body{background:var(--bg);color:#fff;font-family:"Host Grotesk",sans-serif;-webkit-font-smoothing:antialiased}
+  body{padding:96px 56px 120px;min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:rgba(137,174,255,.14);border-radius:9px}
+
+  .wrap{max-width:1320px;margin:0 auto}
+  /* header */
+  .head{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:64px}
+  .eyebrow{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:rgba(137,174,255,.5)}
+  .head h1{font-size:64px;font-weight:400;line-height:1.04;margin-top:18px;letter-spacing:-1px}
+  .head .sub{font-size:18px;color:var(--mut);margin-top:18px;max-width:560px;line-height:1.5}
+  .topnav{position:fixed;top:34px;left:56px;right:56px;display:flex;align-items:center;justify-content:space-between;z-index:50;font-size:16px}
+  .topnav .home{color:var(--mut);transition:color .2s}.topnav .home:hover{color:#fff}
+  .topnav .brand{color:#fff;letter-spacing:.3px}
+
+  /* grid */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;grid-auto-rows:300px}
+  .tile{position:relative;border:1px solid var(--line);background:var(--glass);border-radius:32px;overflow:hidden;
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    transition:border-color .3s ease,transform .3s cubic-bezier(.2,1,.3,1);will-change:transform}
+  .tile:hover{border-color:var(--line2);transform:translateY(-4px)}
+  .tile .lbl{position:absolute;top:26px;left:28px;z-index:5;font-size:13px;letter-spacing:1.6px;text-transform:uppercase;color:var(--mut2)}
+  .span2{grid-column:span 2}.row2{grid-row:span 2}
+  .pad{position:absolute;inset:0;padding:62px 30px 30px;display:flex;flex-direction:column}
+
+  /* shared atoms */
+  .pill{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 13px;border-radius:100px;font-size:12.5px;
+    color:var(--ink);background:rgba(137,174,255,.07);border:1px solid var(--line)}
+  .mesh{position:relative;overflow:hidden;background:#4d70ff}
+  .mesh::before{content:"";position:absolute;inset:0;z-index:0;
+    background:radial-gradient(65% 65% at 22% 24%,#9bbcff 0,transparent 60%),
+      radial-gradient(60% 60% at 84% 28%,#3a63ff 0,transparent 60%),
+      radial-gradient(78% 78% at 52% 94%,#b8d0ff 0,transparent 62%),#4d70ff;
+    background-size:230% 230%;animation:mesh 5s ease-in-out infinite}
+  @keyframes mesh{0%{background-position:0 0}50%{background-position:100% 100%}100%{background-position:0 0}}
+  .mesh>*{position:relative;z-index:1}
+  .arrow{flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:1px solid rgba(80,118,255,.28);
+    display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:22px}
+  .btn{height:46px;padding:0 22px;border-radius:13px;display:inline-flex;align-items:center;gap:8px;justify-content:center;
+    font-size:15px;font-weight:500;color:#fff;background:linear-gradient(120deg,var(--blue2),#3a5bff);cursor:pointer}
+  .btnw{height:46px;padding:0 22px;border-radius:13px;display:inline-flex;align-items:center;gap:8px;justify-content:center;
+    font-size:15px;font-weight:500;color:#2247ff;background:#fff;cursor:pointer}
+
+  /* ---- 1. ACCOUNT (tall, 2 rows) ---- */
+  .acc .who{display:flex;align-items:center;gap:14px}
+  .acc .ava{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#6a87ff,#3a5bff);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
+  .acc .who .nm{font-size:18px}.acc .who .em{font-size:13px;color:var(--mut2)}
+  .acc .policy{margin-top:auto;border:1px solid var(--line);border-radius:22px;padding:22px;background:rgba(8,11,20,.5)}
+  .acc .policy .top{display:flex;align-items:center;justify-content:space-between}
+  .acc .badge{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#7CFFB0;background:rgba(60,255,140,.08);border:1px solid rgba(60,255,140,.2);padding:5px 10px;border-radius:100px}
+  .acc .car{font-size:24px;margin-top:14px}
+  .acc .plate{display:inline-flex;margin-top:10px;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:8px;padding:5px 11px;font-size:15px;color:var(--ink)}
+  .acc .meta{display:flex;justify-content:space-between;margin-top:18px;font-size:13px;color:var(--mut)}
+  .acc .meta b{display:block;color:#fff;font-size:16px;font-weight:500;margin-top:3px}
+  .acc .links{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+
+  /* ---- 2. LIVE PRICE ---- */
+  .lp .q{font-size:21px;margin-top:2px}
+  .lp .opts{display:flex;gap:8px;margin-top:16px}
+  .lp .opt{flex:1;border:1px solid var(--line);border-radius:14px;padding:12px 10px;font-size:13px;color:var(--mut);text-align:center}
+  .lp .opt.on{border-color:rgba(80,118,255,.55);background:rgba(80,118,255,.1);color:#fff}
+  .lp .bar{margin-top:auto}
+  .lp .rng{position:relative;height:6px;border-radius:6px;background:rgba(137,174,255,.12);margin:10px 0 8px}
+  .lp .rng i{position:absolute;top:0;bottom:0;left:22%;right:30%;border-radius:6px;background:linear-gradient(90deg,#3a5bff,#6a87ff)}
+  .lp .rng b{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .lp .ends{display:flex;justify-content:space-between;font-size:13px;color:var(--mut)}
+  .lp .now{display:flex;align-items:baseline;gap:10px;margin-top:6px}
+  .lp .now .n{font-size:34px}.lp .now .d{font-size:13px;color:#7CFFB0}
+
+  /* ---- 3. PRICE BREAKDOWN ---- */
+  .pb .row{display:flex;align-items:center;gap:12px;margin-top:14px}
+  .pb .row .k{width:96px;flex:0 0 auto;font-size:13.5px;color:var(--ink)}
+  .pb .row .t{flex:1;height:8px;border-radius:8px;background:rgba(137,174,255,.1);overflow:hidden}
+  .pb .row .t i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#3a5bff,#6a87ff)}
+  .pb .row .v{width:54px;text-align:right;font-size:13.5px;color:#fff}
+  .pb .total{display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:18px;border-top:1px solid var(--line)}
+  .pb .total .n{font-size:30px}.pb .total span{font-size:13px;color:var(--mut)}
+
+  /* ---- 4. CLAIMS ---- */
+  .cl .drop{border:1.5px dashed var(--line2);border-radius:18px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--mut);font-size:14px;margin-top:6px}
+  .cl .ai{margin-top:14px;border:1px solid rgba(80,118,255,.25);background:rgba(80,118,255,.06);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+  .cl .ai .dot{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .cl .ai .est{font-size:14px;color:var(--mut)}.cl .ai .est b{display:block;color:#fff;font-size:18px;font-weight:500;margin-top:2px}
+
+  /* ---- 5. CHECKOUT ---- */
+  .co .line{display:flex;justify-content:space-between;font-size:14px;color:var(--mut);margin-top:11px}
+  .co .line b{color:#fff;font-weight:400}
+  .co .grand{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+  .co .grand .n{font-size:30px;color:#fff}
+  .co .hold{display:flex;align-items:center;gap:9px;margin-top:14px;font-size:13px;color:var(--mut)}
+  .co .lock{display:flex;align-items:center;gap:8px;margin-top:auto;font-size:12.5px;color:var(--mut2)}
+
+  /* ---- 6. COMPARE ---- */
+  .cmp table{width:100%;border-collapse:collapse;margin-top:8px}
+  .cmp td{padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--mut)}
+  .cmp td.v{text-align:right;color:#fff}
+  .cmp td.v.best{color:#7CFFB0}
+  .cmp tr:last-child td{border-bottom:0}
+
+  /* ---- 7. LANGUAGES ---- */
+  .lng .list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+  .lng .it{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:14px;padding:13px 16px;font-size:15px;color:var(--mut)}
+  .lng .it.on{border-color:rgba(80,118,255,.5);background:rgba(80,118,255,.08);color:#fff}
+  .lng .it .tick{color:var(--blue)}
+
+  /* ---- 8. TRUST ---- */
+  .tr .item{display:flex;gap:13px;align-items:flex-start;margin-top:16px}
+  .tr .item .ic{width:34px;height:34px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--blue)}
+  .tr .item .tx{font-size:14px;color:#fff}.tr .item .tx span{display:block;color:var(--mut2);font-size:12.5px;margin-top:3px}
+
+  /* ---- big CTA tile ---- */
+  .cta{background:radial-gradient(130% 170% at 12% 8%,#7c97ff,#4f72ff 52%,#274bff);border:0}
+  .cta .pad{justify-content:center}
+  .cta h3{font-size:30px;line-height:1.1;color:#fff;max-width:80%}
+  .cta p{font-size:15px;color:rgba(255,255,255,.78);margin-top:12px;max-width:78%;line-height:1.45}
+  .cta .btnw{margin-top:22px;align-self:flex-start}
+
+  .foot{display:flex;align-items:center;justify-content:space-between;margin-top:50px;font-size:14px;color:var(--mut2)}
+  .foot a{color:var(--mut)}.foot a:hover{color:#fff}
+  .foot .fl{display:flex;gap:26px}
+
+  @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}.span2{grid-column:span 2}}
+  @media(max-width:680px){body{padding:80px 20px}.grid{grid-template-columns:1fr;grid-auto-rows:280px}.span2,.row2{grid-column:auto;grid-row:auto}.head h1{font-size:42px}}
+</style>
+</head>
+<body>
+  <div class="topnav">
+    <a class="brand">insuro</a>
+    <a class="home" href="hero.html">← back to hero</a>
+  </div>
+
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">insuro · product</div>
+      <h1>the complete picture</h1>
+      <div class="sub">the screens, flows and details that turn a plate lookup into a finished insurance product — quote, buy, claim, manage.</div>
+    </div>
+
+    <div class="grid">
+
+      <!-- 1 · ACCOUNT (tall) -->
+      <div class="tile acc row2">
+        <div class="lbl">account</div>
+        <div class="pad">
+          <div class="who">
+            <div class="ava">A</div>
+            <div><div class="nm">Andreas K.</div><div class="em">andreas@mail.cy</div></div>
+          </div>
+          <div class="policy">
+            <div class="top"><span style="font-size:13px;color:var(--mut2)">active policy</span><span class="badge">active</span></div>
+            <div class="car">Mercedes-AMG GT</div>
+            <div class="plate"><span style="color:var(--blue)">★</span> ABC 123 · CY</div>
+            <div class="meta">
+              <div>cover<b>full kasko</b></div>
+              <div>renews<b>14 may 2027</b></div>
+              <div>premium<b>€1,120</b></div>
+            </div>
+          </div>
+          <div class="links">
+            <span class="pill">documents</span>
+            <span class="pill">report no-claims</span>
+            <span class="pill">renew early</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 · LIVE PRICE (span 2) -->
+      <div class="tile lp span2">
+        <div class="lbl">live price</div>
+        <div class="pad">
+          <div class="q">how much cover do you need?</div>
+          <div class="opts">
+            <div class="opt">liability</div>
+            <div class="opt">+ theft &amp; fire</div>
+            <div class="opt on">full kasko · recommended</div>
+          </div>
+          <div class="bar">
+            <div class="ends"><span>your price so far</span><span>2 answers to exact</span></div>
+            <div class="rng"><i></i><b style="left:22%"></b><b style="left:70%"></b></div>
+            <div class="now"><span class="n">€980 – €1,180</span><span class="d">narrowing ↓</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 · PRICE BREAKDOWN -->
+      <div class="tile pb">
+        <div class="lbl">what shapes your price</div>
+        <div class="pad">
+          <div style="font-size:16px;color:var(--mut);margin-bottom:2px">every euro, explained</div>
+          <div class="row"><span class="k">577 hp</span><span class="t"><i style="width:82%"></i></span><span class="v">€420</span></div>
+          <div class="row"><span class="k">car value</span><span class="t"><i style="width:64%"></i></span><span class="v">€330</span></div>
+          <div class="row"><span class="k">driver</span><span class="t"><i style="width:38%"></i></span><span class="v">€210</span></div>
+          <div class="row"><span class="k">region</span><span class="t"><i style="width:24%"></i></span><span class="v">€160</span></div>
+          <div class="total"><span style="font-size:13px;color:var(--mut)">total / year</span><span class="n">€1,120</span></div>
+        </div>
+      </div>
+
+      <!-- 4 · CLAIMS -->
+      <div class="tile cl">
+        <div class="lbl">claims</div>
+        <div class="pad">
+          <div style="font-size:16px;margin-bottom:4px">file a claim in minutes</div>
+          <div class="drop"><div style="font-size:26px">＋</div><div>add photos of the damage</div></div>
+          <div class="ai">
+            <div class="dot mesh">✦</div>
+            <div class="est">ai damage estimate<b>€2,400 · paid in 3 days</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 · CHECKOUT -->
+      <div class="tile co">
+        <div class="lbl">checkout</div>
+        <div class="pad">
+          <div style="font-size:16px">Gan Direct · full kasko</div>
+          <div class="line"><span>annual premium</span><b>€1,120</b></div>
+          <div class="line"><span>no-claims discount</span><b>−€180</b></div>
+          <div class="line"><span>garage parking</span><b>−€40</b></div>
+          <div class="grand"><span style="font-size:13px;color:var(--mut)">you pay</span><span class="n">€900<span style="font-size:14px;color:var(--mut)"> /yr</span></span></div>
+          <div class="hold"><span class="arrow" style="width:26px;height:26px;font-size:13px;border-color:rgba(80,118,255,.4)">⏱</span> price held for 7 days</div>
+          <div class="lock">🔒 encrypted · used only to price your policy</div>
+        </div>
+      </div>
+
+      <!-- 6 · COMPARE -->
+      <div class="tile cmp">
+        <div class="lbl">compare by meaning</div>
+        <div class="pad">
+          <div style="font-size:16px;margin-bottom:2px">Gan Direct <span style="color:var(--mut2);font-size:13px">vs Trust</span></div>
+          <table>
+            <tr><td>payout speed</td><td class="v best">3 days</td></tr>
+            <tr><td>glass cover</td><td class="v best">included</td></tr>
+            <tr><td>courtesy car</td><td class="v">+€40</td></tr>
+            <tr><td>deductible</td><td class="v">€0</td></tr>
+            <tr><td>online claims</td><td class="v best">yes</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 7 · LANGUAGES -->
+      <div class="tile lng">
+        <div class="lbl">language layer</div>
+        <div class="pad">
+          <div style="font-size:16px;margin-bottom:4px">built for cyprus</div>
+          <div class="list">
+            <div class="it on">English <span class="tick">✓</span></div>
+            <div class="it">Ελληνικά</div>
+            <div class="it">Русский</div>
+            <div class="it">Українська</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8 · TRUST -->
+      <div class="tile tr">
+        <div class="lbl">trust in the flow</div>
+        <div class="pad">
+          <div class="item"><div class="ic">🔒</div><div class="tx">bank-grade encryption<span>data used only to price your policy</span></div></div>
+          <div class="item"><div class="ic">⚡</div><div class="tx">payouts in days, not weeks<span>no office visit required</span></div></div>
+          <div class="item"><div class="ic">★</div><div class="tx">4.9 · 12,000 drivers<span>licensed, regulated in cyprus</span></div></div>
+        </div>
+      </div>
+
+      <!-- CTA (span 2) -->
+      <div class="tile cta span2">
+        <div class="pad">
+          <h3>a plate is all it takes.</h3>
+          <p>quote in 60 seconds, buy online, claim from your phone — the whole policy lives in one place.</p>
+          <a class="btnw" href="hero.html">try the hero flow →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="foot">
+      <span>insuro · product showcase</span>
+      <div class="fl"><a href="hero.html">hero</a><a>flows</a><a>system</a></div>
+      <span>© 2026 · cyprus</span>
+    </div>
+  </div>
+</body>
+</html>
